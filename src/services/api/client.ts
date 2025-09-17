@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { ApiResponse, ApiError } from '@/types/api';
-import { getAppCheckToken } from '@/services/firebase/config';
+import { getAppCheckToken } from '@/services/firebase/appcheck-manager';
 
 class ApiClient {
   private client: AxiosInstance;

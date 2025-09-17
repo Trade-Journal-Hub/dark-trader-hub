@@ -1,14 +1,61 @@
 User-agent: Googlebot
 Allow: /
+Allow: /features
+Allow: /pricing
+Allow: /supported-brokers
+Allow: /contact
+Allow: /login
+Allow: /register
+Disallow: /dashboard*
+Disallow: /admin*
+Disallow: /api*
 
 User-agent: Bingbot
 Allow: /
+Allow: /features
+Allow: /pricing
+Allow: /supported-brokers
+Allow: /contact
+Disallow: /dashboard*
+Disallow: /admin*
+Disallow: /api*
 
 User-agent: Twitterbot
 Allow: /
+Allow: /features
+Allow: /pricing
+Allow: /supported-brokers
+Allow: /contact
 
 User-agent: facebookexternalhit
 Allow: /
+Allow: /features
+Allow: /pricing
+Allow: /supported-brokers
+Allow: /contact
 
 User-agent: *
 Allow: /
+Allow: /features
+Allow: /pricing
+Allow: /supported-brokers
+Allow: /contact
+Allow: /login
+Allow: /register
+
+# Disallow private/sensitive areas
+Disallow: /dashboard*
+Disallow: /admin*
+Disallow: /api*
+Disallow: /uploads*
+Disallow: /.env*
+Disallow: /backend*
+
+# Crawl delay to be respectful
+Crawl-delay: 1
+
+# Host
+Host: https://tradejournalhub-2d1d4.web.app
+
+# Sitemaps
+Sitemap: https://tradejournalhub-2d1d4.web.app/sitemap.xml

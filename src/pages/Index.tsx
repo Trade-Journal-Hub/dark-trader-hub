@@ -5,11 +5,13 @@ import AboutSection from '@/components/AboutSection';
 import TestimonialsSection from '@/components/TestimonialsSection';
 import AppDownloadSection from '@/components/AppDownloadSection';
 import Footer from '@/components/Footer';
+import { SEOHead, SEOConfigs } from '@/components/SEOHead';
 import { motion } from 'framer-motion';
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
+      <SEOHead {...SEOConfigs.home} />
       <Navigation />
       <HeroSection />
       

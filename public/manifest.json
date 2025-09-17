@@ -1,0 +1,70 @@
+{
+  "name": "Trading Journal Hub",
+  "short_name": "TradingHub",
+  "description": "Professional trading journal with advanced analytics and performance tracking",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#1a1a1a",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["finance", "productivity", "business"],
+  "screenshots": [
+    {
+      "src": "/assets/dashboard-mockup.jpg",
+      "sizes": "1200x800",
+      "type": "image/jpeg",
+      "platform": "wide",
+      "label": "Trading Dashboard"
+    },
+    {
+      "src": "/assets/portfolio-analytics-mockup.jpg", 
+      "sizes": "1200x800",
+      "type": "image/jpeg",
+      "platform": "wide",
+      "label": "Portfolio Analytics"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512", 
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your trading dashboard",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "/favicon.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Upload File",
+      "short_name": "Upload",
+      "description": "Upload trading data",
+      "url": "/dashboard?upload=true",
+      "icons": [
+        {
+          "src": "/favicon.png", 
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}

@@ -1,8 +1,20 @@
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
+import { SEOHead, SEOConfigs } from '@/components/SEOHead';
 
 const Features = () => {
+  return (
+    <div className="min-h-screen bg-background">
+      <SEOHead {...SEOConfigs.features} />
+      <Navigation />
+      <FeaturesContent />
+      <Footer />
+    </div>
+  );
+};
+
+const FeaturesContent = () => {
   const allFeatures = [
     {
       category: "Trading Tools",

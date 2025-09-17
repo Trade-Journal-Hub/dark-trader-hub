@@ -3,8 +3,20 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Check, Star, Zap, Crown } from 'lucide-react';
+import { SEOHead, SEOConfigs } from '@/components/SEOHead';
 
 const Pricing = () => {
+  return (
+    <div className="min-h-screen bg-background">
+      <SEOHead {...SEOConfigs.pricing} />
+      <Navigation />
+      <PricingContent />
+      <Footer />
+    </div>
+  );
+};
+
+const PricingContent = () => {
   const plans = [
     {
       name: "Basic",
