@@ -1,0 +1,291 @@
+/**
+ * File Upload Component with API Integration
+ */
+import React, { useState, useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { Upload, File, X, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Progress } from '@/components/ui/progress';
+import { useAuth } from '@/services/hooks/useAuth';
+import { useFileUpload } from '@/hooks/useTradingApi';
+import { useDataFlow } from '@/hooks/useDataFlow';
+import { useToast } from '@/components/ui/use-toast';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { PremiumGate } from '@/components/subscription/PremiumGate';
+import { DataFlowProgress } from '@/components/data-flow/DataFlowProgress';
+
+interface FileUploadProps {
+  onUploadComplete?: (fileId: string) => void;
+  onUploadError?: (error: string) => void;
+}
+
+interface UploadedFile {
+  id: string;
+  name: string;
+  size: number;
+  status: 'pending' | 'uploading' | 'processing' | 'completed' | 'failed';
+  progress: number;
+  error?: string;
+  result?: any;
+}
+
+export const FileUpload: React.FC<FileUploadProps> = ({
+  onUploadComplete,
+  onUploadError,
+}) => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const { canUploadFiles } = useSubscription();
+  const { uploading, progress, error, uploadFile } = useFileUpload();
+  const { 
+    processFileUpload, 
+    isInProgress, 
+    isComplete, 
+    hasError, 
+    reset 
+  } = useDataFlow();
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [showProgress, setShowProgress] = useState(false);
+
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to upload files.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!canUploadFiles) {
+      toast({
+        title: "Upgrade Required",
+        description: "Please upgrade your plan to upload files.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (acceptedFiles.length === 0) {
+      toast({
+        title: "Invalid File Type",
+        description: "Only CSV, XLS, and XLSX files are allowed.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const file = acceptedFiles[0];
+    const fileId = `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    // Add file to state
+    const newFile: UploadedFile = {
+      id: fileId,
+      name: file.name,
+      size: file.size,
+      status: 'uploading',
+      progress: 0,
+    };
+
+    setUploadedFiles(prev => [...prev, newFile]);
+    setShowProgress(true);
+
+    try {
+      // Use data flow service for complete processing
+      const analyticsData = await processFileUpload(file);
+
+      setUploadedFiles(prev =>
+        prev.map(f => f.id === fileId ? { 
+          ...f, 
+          status: 'completed', 
+          progress: 100,
+          result: analyticsData
+        } : f)
+      );
+
+      toast({
+        title: "Upload Complete!",
+        description: `File ${file.name} has been processed and analyzed successfully.`,
+        variant: "default",
+      });
+
+      onUploadComplete?.(fileId);
+
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Upload failed';
+      
+      setUploadedFiles(prev =>
+        prev.map(f => f.id === fileId ? { 
+          ...f, 
+          status: 'failed', 
+          error: errorMessage 
+        } : f)
+      );
+
+      toast({
+        title: "Upload Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+
+      onUploadError?.(errorMessage);
+    }
+  }, [user, canUploadFiles, processFileUpload, toast, onUploadComplete, onUploadError]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'text/csv': ['.csv'],
+      'application/vnd.ms-excel': ['.xls'],
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+    },
+    maxFiles: 1,
+    maxSize: 10 * 1024 * 1024, // 10MB
+    disabled: !canUploadFiles || uploading,
+  });
+
+  const removeFile = (fileId: string) => {
+    setUploadedFiles(prev => prev.filter(f => f.id !== fileId));
+  };
+
+  const getFileIcon = (status: UploadedFile['status']) => {
+    switch (status) {
+      case 'uploading':
+      case 'processing':
+        return <Loader2 className="h-5 w-5 animate-spin text-primary" />;
+      case 'completed':
+        return <CheckCircle className="h-5 w-5 text-green-500" />;
+      case 'failed':
+        return <AlertCircle className="h-5 w-5 text-red-500" />;
+      default:
+        return <File className="h-5 w-5 text-muted-foreground" />;
+    }
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  return (
+    <PremiumGate 
+      feature="File Upload" 
+      requiredPlan="professional"
+    >
+      <div className="space-y-4">
+        {/* Data Flow Progress */}
+        {showProgress && (isInProgress || isComplete || hasError) && (
+          <DataFlowProgress 
+            onClose={() => setShowProgress(false)}
+            showCloseButton={isComplete || hasError}
+          />
+        )}
+
+        <Card className="border-2 border-dashed hover:border-primary transition-colors">
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Upload className="mr-2 h-5 w-5" />
+            Upload Trading Data
+          </CardTitle>
+          <CardDescription>
+            Drag and drop your CSV/Excel trading files here, or click to select.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div
+            {...getRootProps()}
+            className={`flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors
+              ${isDragActive ? 'border-primary bg-primary/10' : 'border-muted-foreground/20 hover:border-primary/50'}
+              ${!canUploadFiles || uploading ? 'opacity-50 cursor-not-allowed' : ''}
+            `}
+          >
+            <input {...getInputProps()} />
+            <Upload className="h-12 w-12 text-muted-foreground mb-4" />
+            {isDragActive ? (
+              <p className="text-lg text-primary">Drop the file here...</p>
+            ) : (
+              <p className="text-lg text-muted-foreground">
+                Drag 'n' drop your trading file here, or{' '}
+                <span className="text-primary underline">click to select</span>
+              </p>
+            )}
+            <p className="text-sm text-muted-foreground mt-2">
+              (Only .csv, .xls, .xlsx files, max 10MB)
+            </p>
+          </div>
+
+          {error && (
+            <Alert className="mt-4" variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                {error.message || 'An error occurred during upload'}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {uploadedFiles.length > 0 && (
+            <div className="mt-4 space-y-2">
+              {uploadedFiles.map((file) => (
+                <div
+                  key={file.id}
+                  className="flex items-center space-x-3 p-3 border rounded-md bg-muted/50"
+                >
+                  {getFileIcon(file.status)}
+                  
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{file.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatFileSize(file.size)}
+                    </p>
+                    
+                    {file.status === 'uploading' && (
+                      <div className="mt-1">
+                        <Progress value={file.progress} className="h-2" />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {file.progress}% uploaded
+                        </p>
+                      </div>
+                    )}
+                    
+                    {file.status === 'processing' && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Processing file...
+                      </p>
+                    )}
+                    
+                    {file.status === 'completed' && (
+                      <p className="text-xs text-green-600 mt-1">
+                        Upload complete
+                      </p>
+                    )}
+                    
+                    {file.status === 'failed' && (
+                      <p className="text-xs text-red-600 mt-1">
+                        {file.error || 'Upload failed'}
+                      </p>
+                    )}
+                  </div>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeFile(file.id)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+      </div>
+    </PremiumGate>
+  );
+};
