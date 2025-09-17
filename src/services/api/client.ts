@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { ApiResponse, ApiError } from '@/types/api';
+import { getAppCheckToken } from '@/services/firebase/config';
 
 class ApiClient {
   private client: AxiosInstance;
@@ -17,13 +18,29 @@ class ApiClient {
   }
 
   private setupInterceptors() {
-    // Request interceptor to add auth token
+    // Request interceptor to add auth token and App Check token
     this.client.interceptors.request.use(
-      (config) => {
+      async (config) => {
+        // Add Firebase Auth token
         const token = localStorage.getItem('authToken');
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
+        
+        // Add Firebase App Check token for enhanced security
+        try {
+          const appCheckToken = await getAppCheckToken();
+          if (appCheckToken) {
+            config.headers['X-Firebase-AppCheck'] = appCheckToken;
+          }
+        } catch (error) {
+          console.warn('Failed to get App Check token:', error);
+          // Don't block the request if App Check fails in development
+          if (import.meta.env.MODE === 'production') {
+            throw new Error('App Check token required for production requests');
+          }
+        }
+        
         return config;
       },
       (error) => {

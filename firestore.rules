@@ -1,0 +1,197 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ============================================================================
+    // SECURITY FUNCTIONS
+    // ============================================================================
+    
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Check if user owns the resource
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    // Check if user is admin (optional for future use)
+    function isAdmin() {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    
+    // Validate user data structure
+    function isValidUserData() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['email', 'createdAt', 'updatedAt']) &&
+             data.email is string &&
+             data.createdAt is timestamp &&
+             data.updatedAt is timestamp;
+    }
+    
+    // Validate trade data structure
+    function isValidTradeData() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['symbol', 'side', 'quantity', 'price', 'date', 'userId']) &&
+             data.symbol is string &&
+             data.side in ['BUY', 'SELL'] &&
+             data.quantity is number &&
+             data.price is number &&
+             data.date is timestamp &&
+             data.userId == request.auth.uid;
+    }
+    
+    // Validate analytics data structure
+    function isValidAnalyticsData() {
+      let data = request.resource.data;
+      return data.keys().hasAll(['userId', 'calculatedAt']) &&
+             data.userId == request.auth.uid &&
+             data.calculatedAt is timestamp;
+    }
+    
+    // Rate limiting helper (basic)
+    function isWithinRateLimit() {
+      // Allow up to 100 requests per user per hour (basic protection)
+      return true; // Implement more sophisticated rate limiting if needed
+    }
+    
+    // ============================================================================
+    // USER MANAGEMENT
+    // ============================================================================
+    
+    // User profiles - users can only access their own profile
+    match /users/{userId} {
+      allow read: if isAuthenticated() && isOwner(userId);
+      allow create: if isAuthenticated() && isOwner(userId) && isValidUserData();
+      allow update: if isAuthenticated() && isOwner(userId) && isValidUserData();
+      allow delete: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // User settings - users can only access their own settings
+    match /userSettings/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // ============================================================================
+    // TRADING DATA
+    // ============================================================================
+    
+    // Trading data - users can only access their own trades
+    match /trades/{tradeId} {
+      allow read: if isAuthenticated() && 
+                     resource.data.userId == request.auth.uid;
+      
+      allow create: if isAuthenticated() && 
+                       isValidTradeData() &&
+                       isWithinRateLimit();
+      
+      allow update: if isAuthenticated() && 
+                       resource.data.userId == request.auth.uid &&
+                       isValidTradeData();
+      
+      allow delete: if isAuthenticated() && 
+                       resource.data.userId == request.auth.uid;
+    }
+    
+    // User's trade collections (subcollections)
+    match /users/{userId}/trades/{tradeId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // ============================================================================
+    // ANALYTICS DATA
+    // ============================================================================
+    
+    // Analytics data - users can only access their own analytics
+    match /analytics/{userId} {
+      allow read: if isAuthenticated() && isOwner(userId);
+      allow write: if isAuthenticated() && isOwner(userId) && isValidAnalyticsData();
+    }
+    
+    // Cached analytics data
+    match /analyticsCache/{userId} {
+      allow read: if isAuthenticated() && isOwner(userId);
+      allow write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Performance metrics
+    match /performanceMetrics/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // ============================================================================
+    // FILE METADATA
+    // ============================================================================
+    
+    // File upload metadata - users can only access their own file metadata
+    match /fileUploads/{userId}/files/{fileId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Processing status
+    match /processingStatus/{userId}/files/{fileId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // ============================================================================
+    // SUBSCRIPTION DATA
+    // ============================================================================
+    
+    // User subscriptions - users can only access their own subscription data
+    match /subscriptions/{userId} {
+      allow read: if isAuthenticated() && isOwner(userId);
+      // Only backend can write subscription data
+      allow write: if false; // Backend service account only
+    }
+    
+    // Usage tracking
+    match /usageTracking/{userId} {
+      allow read: if isAuthenticated() && isOwner(userId);
+      allow write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // ============================================================================
+    // ADMIN COLLECTIONS (Optional)
+    // ============================================================================
+    
+    // Admin users list - only admins can read
+    match /admins/{userId} {
+      allow read: if isAdmin();
+      allow write: if false; // Manual admin assignment only
+    }
+    
+    // System logs - only admins can read
+    match /systemLogs/{logId} {
+      allow read: if isAdmin();
+      allow write: if false; // Backend only
+    }
+    
+    // ============================================================================
+    // PUBLIC DATA (Read-only)
+    // ============================================================================
+    
+    // App configuration - public read-only
+    match /config/app {
+      allow read: if true;
+      allow write: if false; // Admin console only
+    }
+    
+    // Market data - public read-only (if needed)
+    match /marketData/{symbol} {
+      allow read: if true;
+      allow write: if false; // Backend service only
+    }
+    
+    // ============================================================================
+    // SECURITY DEFAULTS
+    // ============================================================================
+    
+    // Default deny rule - anything not explicitly allowed is denied
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

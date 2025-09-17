@@ -1,0 +1,5 @@
+
+# Secret Key Files (Auto-generated)
+.secret_key
+backend/.secret_key
+**/.secret_key

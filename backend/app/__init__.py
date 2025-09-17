@@ -9,7 +9,7 @@ from flask_cors import CORS
 
 from app.config import Config
 from app.extensions import auth, db, storage
-from app.middleware.auth_middleware import AuthMiddleware
+from app.middleware.enhanced_auth_middleware import EnhancedAuthMiddleware
 from app.routes import api_bp
 from app.routes.analytics_routes import analytics_bp
 from app.routes.file_routes import file_bp
@@ -29,12 +29,19 @@ def create_app(config_class=Config):
     auth.init_app(app)
     storage.init_app(app)
 
-    # Configure CORS
+    # Configure CORS with App Check headers
     CORS(
         app,
         origins=app.config.get("ALLOWED_ORIGINS", ["http://localhost:3000"]),
-        allow_headers=["Content-Type", "Authorization"],
+        allow_headers=[
+            "Content-Type", 
+            "Authorization", 
+            "X-Firebase-AppCheck",
+            "X-Request-Timestamp",
+            "X-Client-Version"
+        ],
         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        expose_headers=["X-Security-Context", "X-Request-ID"],
     )
 
     # Register blueprints
@@ -42,8 +49,8 @@ def create_app(config_class=Config):
     app.register_blueprint(file_bp)
     app.register_blueprint(analytics_bp)
 
-    # Add authentication middleware
-    app.wsgi_app = AuthMiddleware(app.wsgi_app)
+    # Add enhanced authentication middleware with App Check
+    app.wsgi_app = EnhancedAuthMiddleware(app.wsgi_app)
 
     # Health check endpoint
     @app.route("/health")

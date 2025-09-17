@@ -33,3 +33,36 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+backend/firebase-service-account.json
+
+# Firebase Service Account Keys (CRITICAL - NEVER COMMIT!)
+firebase-service-account.json
+backend/firebase-service-account.json
+**/firebase-service-account*.json
+*-service-account*.json
+service-account*.json
+
+# Firebase Configuration (May contain sensitive data)
+.firebaserc
+
+# Additional Security Files
+*.pem
+*.p12
+*.key
+*.crt
+.secrets/
+secrets/
+config/secrets.json
+
+# Backend Environment Files
+backend/.env
+backend/.env.*
+backend/config.py.local
+
+# Temporary and Cache Files
+.cache/
+.temp/
+temp/
+uploads/
+logs/
+

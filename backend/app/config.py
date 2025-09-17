@@ -10,12 +10,33 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+# Import secret key managers with smart fallback
+try:
+    from app.utils.cloud_secret_manager import get_production_secret_key
+    from app.utils.secret_manager import get_secret_key
+    _secret_managers_available = True
+except ImportError:
+    _secret_managers_available = False
+
+
+def _get_smart_secret_key():
+    """Smart SECRET_KEY selection based on environment"""
+    if not _secret_managers_available:
+        return os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")
+    
+    # Production: Use cloud secret manager
+    if os.getenv('ENVIRONMENT') == 'production':
+        return get_production_secret_key()
+    
+    # Development/Staging: Use local secret manager
+    return get_secret_key()
+
 
 class Config:
     """Base configuration class."""
 
-    # Flask configuration
-    SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")
+    # Flask configuration - Smart SECRET_KEY management
+    SECRET_KEY = _get_smart_secret_key()
     DEBUG = os.getenv("FLASK_ENV", "development") == "development"
     TESTING = False
 

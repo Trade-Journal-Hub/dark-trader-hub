@@ -4,7 +4,7 @@ Analytics routes for trading data analysis
 
 from flask import Blueprint, jsonify, request
 
-from app.middleware.auth_middleware import require_auth
+from app.middleware.enhanced_auth_middleware import medium_security, high_security
 from app.services.analytics_service import analytics_service
 from app.utils.logger import get_logger
 from app.utils.validation import validate_analytics_request
@@ -15,7 +15,7 @@ analytics_bp = Blueprint("analytics", __name__, url_prefix="/api/analytics")
 
 
 @analytics_bp.route("/overview", methods=["GET"])
-@require_auth
+@medium_security  # Standard analytics viewing
 def get_overview():
     """
     Get trading overview analytics.
@@ -76,7 +76,7 @@ def get_overview():
 
 
 @analytics_bp.route("/performance", methods=["GET"])
-@require_auth
+@medium_security  # Standard analytics viewing
 def get_performance():
     """
     Get detailed performance analytics.
@@ -140,7 +140,7 @@ def get_performance():
 
 
 @analytics_bp.route("/risk", methods=["GET"])
-@require_auth
+@medium_security  # Standard analytics viewing
 def get_risk_analysis():
     """
     Get risk analysis metrics.
@@ -199,7 +199,7 @@ def get_risk_analysis():
 
 
 @analytics_bp.route("/symbols", methods=["GET"])
-@require_auth
+@medium_security  # Standard analytics viewing
 def get_symbol_analytics():
     """
     Get analytics for specific symbols.
@@ -260,7 +260,7 @@ def get_symbol_analytics():
 
 
 @analytics_bp.route("/dashboard", methods=["GET"])
-@require_auth
+@medium_security  # Standard analytics viewing
 def get_dashboard_data():
     """
     Get comprehensive dashboard analytics data.
@@ -319,7 +319,7 @@ def get_dashboard_data():
 
 
 @analytics_bp.route("/advanced", methods=["GET"])
-@require_auth
+@high_security  # Advanced analytics requires App Check
 def get_advanced_analytics():
     """
     Get advanced analytics with sophisticated metrics.
@@ -380,7 +380,7 @@ def get_advanced_analytics():
 
 
 @analytics_bp.route("/export", methods=["GET"])
-@require_auth
+@high_security  # Data export requires highest security
 def export_analytics():
     """
     Export analytics data in various formats.

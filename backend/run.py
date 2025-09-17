@@ -20,7 +20,7 @@ if __name__ == '__main__':
         exit(1)
     
     # Run the application
-     port = int(os.getenv('PORT', 8000))
+    port = int(os.getenv('PORT', 8000))
     debug = os.getenv('FLASK_ENV', 'development') == 'development'
     
     print(f"Starting Trading Journal API on port {port}")

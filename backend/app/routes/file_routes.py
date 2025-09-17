@@ -8,7 +8,7 @@ import tempfile
 from flask import Blueprint, current_app, jsonify, request
 from werkzeug.utils import secure_filename
 
-from app.middleware.auth_middleware import require_auth
+from app.middleware.enhanced_auth_middleware import high_security, medium_security, get_security_context, log_security_event
 from app.services.file_processing_service import file_processing_service
 from app.services.firebase_service import firebase_service
 from app.utils.logger import get_logger
@@ -20,7 +20,7 @@ file_bp = Blueprint("file", __name__, url_prefix="/api/files")
 
 
 @file_bp.route("/upload", methods=["POST"])
-@require_auth
+@high_security  # Requires both authentication and App Check
 def upload_file():
     """
     Upload and process a trading data file.
@@ -33,17 +33,27 @@ def upload_file():
         JSON response with processing results
     """
     try:
+        # Log security event
+        security_context = get_security_context()
+        log_security_event("FILE_UPLOAD_ATTEMPT", {
+            "app_check_verified": security_context["app_check_verified"],
+            "security_level": security_context["security_level"]
+        })
+
         # Check if file is present
         if "file" not in request.files:
+            log_security_event("FILE_UPLOAD_FAILED", {"reason": "no_file_provided"})
             return jsonify({"success": False, "error": "No file provided"}), 400
 
         file = request.files["file"]
         if file.filename == "":
+            log_security_event("FILE_UPLOAD_FAILED", {"reason": "no_file_selected"})
             return jsonify({"success": False, "error": "No file selected"}), 400
 
         # Get user ID from auth token
         user_id = request.user_id
         if not user_id:
+            log_security_event("FILE_UPLOAD_FAILED", {"reason": "no_user_id"})
             return (
                 jsonify({"success": False, "error": "User authentication required"}),
                 401,
@@ -144,7 +154,7 @@ def upload_file():
 
 
 @file_bp.route("/history", methods=["GET"])
-@require_auth
+@medium_security  # File history viewing
 def get_file_history():
     """
     Get file upload history for the user.
@@ -174,7 +184,7 @@ def get_file_history():
 
 
 @file_bp.route("/<file_id>", methods=["DELETE"])
-@require_auth
+@high_security  # File deletion requires highest security
 def delete_file(file_id):
     """
     Delete a processed file and its data.
@@ -218,7 +228,7 @@ def delete_file(file_id):
 
 
 @file_bp.route("/<file_id>/trades", methods=["GET"])
-@require_auth
+@medium_security  # Trade data viewing
 def get_file_trades(file_id):
     """
     Get trades from a specific file.
