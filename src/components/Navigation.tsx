@@ -21,8 +21,9 @@ const Navigation = () => {
               <div className="w-0.5 h-10 bg-gradient-to-b from-cyan-400 via-purple-400 to-pink-400 opacity-70 group-hover:opacity-100 transition-opacity duration-300"></div>
               <Link to="/" className="relative text-2xl font-bold overflow-hidden">
                 <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-200 to-purple-200 hover:from-cyan-300 hover:via-purple-300 hover:to-pink-300 transition-all duration-500">
-                  TradeJournal Pro
+                  TradeJournal PRO
                 </span>
+
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/20 to-purple-400/20 opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
               </Link>
             </div>

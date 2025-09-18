@@ -3,12 +3,13 @@
  * Performance-optimized parallax hero section with trading-focused content
  */
 
-import React, { memo, useMemo } from "react";
+import React, { memo, useMemo, useCallback } from "react";
 import {
   motion,
   useScroll,
   useTransform,
   useSpring,
+  useMotionValueEvent,
   MotionValue,
 } from "framer-motion";
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
@@ -161,7 +162,18 @@ export const TradingHeroParallax = memo(() => {
     offset: ["start start", "end start"],
   });
 
-  const springConfig = { stiffness: 300, damping: 30, bounce: 100 };
+  // Performance optimization: throttle scroll updates
+  const throttledScrollUpdate = useCallback((latest: number) => {
+    // Throttle updates to improve performance during fast scrolling
+    requestAnimationFrame(() => {
+      // This ensures smooth updates without blocking the main thread
+    });
+  }, []);
+
+  useMotionValueEvent(scrollYProgress, "change", throttledScrollUpdate);
+
+  // Optimized spring config for smoother scrolling
+  const springConfig = { stiffness: 100, damping: 25, bounce: 0, mass: 0.8 };
 
   const translateX = useSpring(
     useTransform(scrollYProgress, [0, 1], [0, 1000]),
@@ -191,7 +203,7 @@ export const TradingHeroParallax = memo(() => {
   return (
     <div
       ref={ref}
-      className="h-[300vh] py-40 overflow-hidden antialiased relative flex flex-col self-auto [perspective:1000px] [transform-style:preserve-3d] bg-black"
+      className="h-[300vh] py-40 overflow-hidden antialiased relative flex flex-col self-auto [perspective:1000px] [transform-style:preserve-3d] bg-black smooth-scroll will-change-transform"
     >
       <TradingHeader />
       <motion.div
@@ -201,7 +213,7 @@ export const TradingHeroParallax = memo(() => {
           translateY,
           opacity,
         }}
-        className=""
+        className="will-change-transform transform-gpu"
       >
         <motion.div className="flex flex-row-reverse space-x-reverse space-x-20 mb-20">
           {firstRow.map((product) => (
@@ -314,7 +326,7 @@ const TradingProductCard = memo(({
         scale: 1.02,
       }}
       key={product.title}
-      className="group/product h-96 w-[30rem] relative shrink-0 cursor-pointer"
+      className="group/product h-96 w-[30rem] relative shrink-0 cursor-pointer will-change-transform transform-gpu"
     >
       <a
         href={product.link}

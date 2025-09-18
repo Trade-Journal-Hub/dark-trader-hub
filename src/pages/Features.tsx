@@ -9,22 +9,17 @@ import Footer from '@/components/Footer';
 import { StickyScroll } from '@/components/ui/sticky-scroll-reveal';
 import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
+// Removed unused Card imports
 import { BentoGrid, BentoCard } from '@/components/ui/bento-grid';
 import { SEOHead, SEOConfigs } from '@/components/SEOHead';
 import { 
   BarChart3, 
   Shield, 
-  FileSpreadsheet, 
   PieChart,
   TrendingUp,
   DollarSign,
   Users,
-  Award,
   CheckCircle,
-  ArrowRight,
-  Zap,
-  Target,
   Activity,
   Sparkles,
   Brain,
@@ -278,7 +273,7 @@ const Features = memo(() => {
         </div>
       ),
       Icon: Globe,
-      className: "col-span-3 lg:col-span-2 animate-fade-in",
+      className: "col-span-1 sm:col-span-2 lg:col-span-2 animate-fade-in",
       href: "/brokers",
       cta: "View All Brokers"
     },
@@ -298,7 +293,7 @@ const Features = memo(() => {
         </div>
       ),
       Icon: Brain,
-      className: "col-span-3 lg:col-span-1 animate-fade-in",
+      className: "col-span-1 sm:col-span-1 lg:col-span-1 animate-fade-in",
       href: "/ai-insights",
       cta: "Try AI Features"
     },
@@ -318,7 +313,7 @@ const Features = memo(() => {
         </div>
       ),
       Icon: Lock,
-      className: "col-span-3 lg:col-span-1 animate-fade-in",
+      className: "col-span-1 sm:col-span-1 lg:col-span-1 animate-fade-in",
       href: "/security",
       cta: "Security Details"
     },
@@ -351,7 +346,7 @@ const Features = memo(() => {
         </div>
       ),
       Icon: Bell,
-      className: "col-span-3 lg:col-span-2 animate-fade-in",
+      className: "col-span-1 sm:col-span-2 lg:col-span-2 animate-fade-in",
       href: "/alerts",
       cta: "Configure Alerts"
     },
@@ -371,7 +366,7 @@ const Features = memo(() => {
         </div>
       ),
       Icon: Calculator,
-      className: "col-span-3 lg:col-span-1 animate-fade-in",
+      className: "col-span-1 sm:col-span-2 lg:col-span-2 animate-fade-in",
       href: "/tax-tools",
       cta: "Tax Calculator"
     },
@@ -406,7 +401,7 @@ const Features = memo(() => {
         </div>
       ),
       Icon: Clock,
-      className: "col-span-3 lg:col-span-2 animate-fade-in",
+      className: "col-span-1 sm:col-span-1 lg:col-span-1 animate-fade-in",
       href: "/time-analysis",
       cta: "View Analysis"
     }
@@ -469,18 +464,18 @@ const Features = memo(() => {
           {/* Enhanced Bento Grid Power Features */}
           <div className="mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-white">
-              Advanced 
+              Advanced{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
                 Power Features
               </span>
             </h2>
             
-            <BentoGrid className="auto-rows-[20rem] grid-cols-3 gap-4">
+            <BentoGrid className="auto-rows-[16rem] sm:auto-rows-[18rem] lg:auto-rows-[20rem] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {bentoFeatures.map((feature, index) => (
                 <BentoCard
                   key={index}
                   name={feature.name}
-                  className={`${feature.className} animate-fade-in hover:animate-pulse`}
+                  className={`${feature.className} animate-fade-in`}
                   background={feature.background}
                   Icon={feature.Icon}
                   description={feature.description}

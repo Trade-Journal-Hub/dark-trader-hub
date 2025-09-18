@@ -1,5 +1,5 @@
 import Navigation from '@/components/Navigation';
-import HeroSection from '@/components/HeroSection';
+// Removed unused HeroSection import
 import TradingHeroParallax from '@/components/TradingHeroParallax';
 import FeaturesSection from '@/components/FeaturesSection';
 import AboutSection from '@/components/AboutSection';
@@ -11,15 +11,12 @@ import { motion } from 'framer-motion';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-black overflow-x-hidden">
+    <div className="min-h-screen bg-black overflow-x-hidden smooth-scroll">
       <SEOHead {...SEOConfigs.home} />
       <Navigation />
       
-      {/* New Black Parallax Hero */}
+      {/* Trading Hero Parallax */}
       <TradingHeroParallax />
-      
-      {/* Original Hero (backup) */}
-      {/* <HeroSection /> */}
       
 
       <motion.div

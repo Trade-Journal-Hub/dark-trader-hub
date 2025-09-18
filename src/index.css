@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Smooth scrolling optimizations */
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Performance optimizations for smooth scrolling */
+.smooth-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* GPU acceleration for better performance */
+.transform-gpu {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
 /* BentoGrid animations */
 @keyframes float {
   0%, 100% {
@@ -45,6 +66,51 @@
   opacity: 0;
 }
 
+/* Mobile-optimized animations */
+@media (max-width: 768px) {
+  .animate-float {
+    animation: float 2s ease-in-out infinite;
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite;
+  }
+  
+  /* Reduce motion for mobile performance */
+  .animate-bounce {
+    animation: bounce 2s infinite;
+  }
+  
+  .animate-pulse {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .animate-ping {
+    animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+  
+  .animate-spin {
+    animation: spin 4s linear infinite;
+  }
+}
+
+/* Reduce animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-bounce,
+  .animate-pulse,
+  .animate-ping,
+  .animate-spin,
+  .animate-float,
+  .animate-glow {
+    animation: none;
+  }
+  
+  .animate-fade-in {
+    animation: none;
+    opacity: 1;
+  }
+}
+
 /* Marquee animations for testimonials */
 @keyframes marquee {
   from {
@@ -83,6 +149,16 @@
 
 .animate-marquee-vertical {
   animation: marquee-vertical var(--duration) linear infinite;
+}
+
+/* Ensure reverse direction works properly */
+.animate-marquee[style*="animation-direction: reverse"] {
+  animation-direction: reverse !important;
+}
+
+/* Force reverse animation for testimonials */
+.group:has([class*="animation-direction:reverse"]) .animate-marquee {
+  animation-direction: reverse !important;
 }
 
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 

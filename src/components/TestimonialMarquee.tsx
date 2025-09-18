@@ -208,15 +208,15 @@ ReviewCard.displayName = 'ReviewCard';
 export const TestimonialMarquee = memo(() => {
   return (
     <div className="relative flex w-full flex-col items-center justify-center overflow-hidden bg-black py-8">
-      {/* First row - left to right */}
-      <Marquee pauseOnHover className="[--duration:30s]">
+      {/* First row - left to right (normal direction) */}
+      <Marquee pauseOnHover className="[--duration:25s] [animation-direction:normal]">
         {firstRow.map((review) => (
           <ReviewCard key={review.username} {...review} />
         ))}
       </Marquee>
       
-      {/* Second row - right to left */}
-      <Marquee reverse pauseOnHover className="[--duration:35s]">
+      {/* Second row - right to left (reverse direction) */}
+      <Marquee reverse pauseOnHover className="[--duration:30s] [animation-direction:reverse]">
         {secondRow.map((review) => (
           <ReviewCard key={review.username} {...review} />
         ))}

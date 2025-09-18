@@ -24,7 +24,7 @@ const BentoGrid = ({ children, className, ...props }: BentoGridProps) => {
   return (
     <div
       className={cn(
-        "grid w-full auto-rows-[22rem] grid-cols-3 gap-4",
+        "grid w-full auto-rows-[18rem] sm:auto-rows-[20rem] lg:auto-rows-[22rem] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4",
         className,
       )}
       {...props}
@@ -52,7 +52,7 @@ const BentoCard = ({
       // light styles
       "bg-white/10 backdrop-blur-sm [box-shadow:0_0_0_1px_rgba(255,255,255,.1),0_2px_4px_rgba(0,0,0,.1),0_12px_24px_rgba(0,0,0,.1)]",
       // dark styles - enhanced for black background with hover animations
-      "transform-gpu border border-white/20 hover:border-cyan-400/50 transition-all duration-500 hover:shadow-lg hover:shadow-cyan-500/20 hover:scale-105",
+      "transform-gpu border border-white/20 hover:border-gradient-to-r hover:from-cyan-400/60 hover:to-purple-400/60 transition-all duration-700 hover:shadow-2xl hover:shadow-cyan-500/30 hover:scale-[1.02] hover:-translate-y-2 hover:bg-white/15",
       className,
     )}
     style={style}
@@ -61,8 +61,8 @@ const BentoCard = ({
     <div>{background}</div>
     <div className="p-4">
       <div className="pointer-events-none z-10 flex transform-gpu flex-col gap-1 transition-all duration-300 lg:group-hover:-translate-y-10">
-        <Icon className="h-12 w-12 origin-left transform-gpu text-white transition-all duration-300 ease-in-out group-hover:scale-75 group-hover:text-cyan-400" />
-        <h3 className="text-xl font-semibold text-white group-hover:text-cyan-400 transition-colors duration-300">
+        <Icon className="h-12 w-12 origin-left transform-gpu text-white transition-all duration-500 ease-out group-hover:scale-110 group-hover:text-cyan-400 group-hover:rotate-12 group-hover:drop-shadow-lg" />
+        <h3 className="text-xl font-semibold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-cyan-400 group-hover:to-purple-400 transition-all duration-500">
           {name}
         </h3>
         <p className="max-w-lg text-gray-300 leading-relaxed">{description}</p>
@@ -105,7 +105,7 @@ const BentoCard = ({
       </Button>
     </div>
 
-    <div className="pointer-events-none absolute inset-0 transform-gpu transition-all duration-300 group-hover:bg-white/[.05]" />
+    <div className="pointer-events-none absolute inset-0 transform-gpu transition-all duration-700 group-hover:bg-gradient-to-br group-hover:from-cyan-400/10 group-hover:via-purple-400/5 group-hover:to-pink-400/10" />
   </div>
 );
 
