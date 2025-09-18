@@ -60,15 +60,18 @@ const FeaturesSection = () => {
   ];
 
   return (
-    <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-subtle">
+    <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-black">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-20">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 bg-gradient-primary bg-clip-text text-transparent">
-            The Complete Trading Arsenal
+          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-white">
+            The Complete 
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
+              Trading Arsenal
+            </span>
           </h2>
-          <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-            Join <span className="text-primary font-semibold">25,000+ profitable traders</span> who've transformed their trading with our institutional-grade platform. 
-            <span className="block mt-2 text-lg">Start your journey to consistent profitability today.</span>
+          <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
+            Join <span className="text-cyan-400 font-semibold">25,000+ profitable traders</span> who've transformed their trading with our institutional-grade platform. 
+            <span className="block mt-2 text-lg text-gray-300">Start your journey to consistent profitability today.</span>
           </p>
         </div>
 
@@ -84,13 +87,13 @@ const FeaturesSection = () => {
               {/* Content */}
               <div className={`space-y-8 ${index % 2 === 1 ? 'lg:col-start-2' : ''}`}>
                 <div>
-                  <h3 className="text-3xl md:text-4xl font-bold mb-3 text-foreground">
+                  <h3 className="text-3xl md:text-4xl font-bold mb-3 text-white">
                     {feature.title}
                   </h3>
-                  <p className="text-xl text-primary font-medium mb-4">
+                  <p className="text-xl text-cyan-400 font-medium mb-4">
                     {feature.subtitle}
                   </p>
-                  <p className="text-lg text-muted-foreground leading-relaxed">
+                  <p className="text-lg text-gray-300 leading-relaxed">
                     {feature.description}
                   </p>
                 </div>
@@ -98,9 +101,9 @@ const FeaturesSection = () => {
                 {/* Stats */}
                 <div className="grid grid-cols-3 gap-6">
                   {feature.stats.map((stat, statIndex) => (
-                    <div key={statIndex} className="text-center p-4 rounded-lg bg-background/50 border border-border">
-                      <div className="text-2xl font-bold text-primary mb-1">{stat.value}</div>
-                      <div className="text-sm text-muted-foreground">{stat.label}</div>
+                    <div key={statIndex} className="text-center p-4 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/15 transition-all duration-300">
+                      <div className="text-2xl font-bold text-cyan-400 mb-1">{stat.value}</div>
+                      <div className="text-sm text-gray-300">{stat.label}</div>
                     </div>
                   ))}
                 </div>
@@ -109,15 +112,15 @@ const FeaturesSection = () => {
                 <div className="space-y-3">
                   {feature.highlights.map((highlight, highlightIndex) => (
                     <div key={highlightIndex} className="flex items-center space-x-3">
-                      <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
-                      <span className="text-foreground">{highlight}</span>
+                      <div className="w-2 h-2 bg-cyan-400 rounded-full flex-shrink-0"></div>
+                      <span className="text-gray-300">{highlight}</span>
                     </div>
                   ))}
                 </div>
 
                 <Button 
                   size="lg" 
-                  className="bg-gradient-primary hover:shadow-glow transition-all duration-300 hover-scale"
+                  className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover-scale"
                 >
                   Start Using This Feature
                 </Button>

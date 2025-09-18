@@ -83,28 +83,28 @@ const SupportedBrokers = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
       <Navigation />
       
       {/* Hero Section */}
-      <section className="pt-24 pb-16 bg-gradient-to-br from-background via-background to-primary/5">
+      <section className="pt-24 pb-16 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="animate-fade-in">
-            <Badge className="mb-4 bg-green-500/10 text-green-400 border-green-500/20">
+            <Badge className="mb-4 bg-white/10 text-white border-white/20 backdrop-blur-sm">
               ✅ 15+ BROKERS SUPPORTED
             </Badge>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
               Connect Your{' '}
-              <span className="bg-gradient-primary bg-clip-text text-transparent">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
                 Favorite Broker
               </span>{' '}
               Instantly
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
               Seamlessly integrate with India's top brokers. Your trades, portfolios, and analytics - 
-              all synchronized automatically with <strong className="text-primary">military-grade security</strong>.
+              all synchronized automatically with <strong className="text-cyan-400">military-grade security</strong>.
             </p>
-            <Button size="lg" className="bg-gradient-primary hover:shadow-glow">
+            <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white border-0 shadow-lg hover:shadow-xl">
               Connect Your Broker Now
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
@@ -113,24 +113,27 @@ const SupportedBrokers = () => {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-16">
+      <section className="py-16 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            Why Choose Our Broker Integration?
+          <h2 className="text-3xl font-bold text-center mb-12 text-white">
+            Why Choose Our 
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
+              Broker Integration?
+            </span>
           </h2>
           
           <div className="grid md:grid-cols-3 gap-8 mb-16">
             {benefits.map((benefit, index) => (
               <div 
                 key={index}
-                className="text-center p-6 bg-card rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-elegant animate-fade-in"
+                className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-elegant animate-fade-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-primary rounded-full mb-4">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mb-4">
                   {benefit.icon}
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{benefit.title}</h3>
-                <p className="text-muted-foreground">{benefit.description}</p>
+                <h3 className="text-xl font-semibold mb-3 text-white">{benefit.title}</h3>
+                <p className="text-gray-300">{benefit.description}</p>
               </div>
             ))}
           </div>
@@ -138,17 +141,20 @@ const SupportedBrokers = () => {
       </section>
 
       {/* Brokers Grid */}
-      <section className="py-16 bg-gradient-to-br from-primary/5 to-background">
+      <section className="py-16 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            Supported Brokers
+          <h2 className="text-3xl font-bold text-center mb-12 text-white">
+            Supported 
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
+              Brokers
+            </span>
           </h2>
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {brokers.map((broker, index) => (
               <div 
                 key={broker.name}
-                className="bg-card rounded-2xl p-6 border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-elegant hover:scale-105 animate-fade-in"
+                className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-elegant hover:scale-105 animate-fade-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="flex items-center justify-between mb-4">
@@ -169,11 +175,11 @@ const SupportedBrokers = () => {
                   </Badge>
                 </div>
                 
-                <h3 className="text-lg font-semibold mb-3">{broker.name}</h3>
+                <h3 className="text-lg font-semibold mb-3 text-white">{broker.name}</h3>
                 
                 <ul className="space-y-2">
                   {broker.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <li key={idx} className="flex items-center gap-2 text-sm text-gray-300">
                       <Check className="h-4 w-4 text-green-400 flex-shrink-0" />
                       {feature}
                     </li>
@@ -186,10 +192,13 @@ const SupportedBrokers = () => {
       </section>
 
       {/* Integration Process */}
-      <section className="py-16">
+      <section className="py-16 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            Connect in 3 Simple Steps
+          <h2 className="text-3xl font-bold text-center mb-12 text-white">
+            Connect in 
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
+              3 Simple Steps
+            </span>
           </h2>
           
           <div className="grid md:grid-cols-3 gap-8">
@@ -212,14 +221,14 @@ const SupportedBrokers = () => {
             ].map((step, index) => (
               <div 
                 key={index}
-                className="text-center p-6 animate-fade-in"
+                className="text-center p-6 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl hover:bg-white/15 hover:border-cyan-400/50 transition-all duration-300 animate-fade-in"
                 style={{ animationDelay: `${index * 0.2}s` }}
               >
-                <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 mx-auto">
+                <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-4 mx-auto shadow-lg">
                   {step.step}
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
-                <p className="text-muted-foreground">{step.description}</p>
+                <h3 className="text-xl font-semibold mb-3 text-white">{step.title}</h3>
+                <p className="text-gray-300">{step.description}</p>
               </div>
             ))}
           </div>
@@ -227,19 +236,22 @@ const SupportedBrokers = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-primary/10 to-secondary/10">
+      <section className="py-16 bg-black">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Don't See Your Broker?
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+            Don't See Your 
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
+              Broker?
+            </span>
           </h2>
-          <p className="text-xl text-muted-foreground mb-8">
+          <p className="text-xl text-gray-300 mb-8">
             We're constantly adding new brokers. Let us know which one you'd like to see next!
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-gradient-primary hover:shadow-glow">
+            <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white border-0 shadow-lg hover:shadow-xl">
               Request New Broker
             </Button>
-            <Button size="lg" variant="outline">
+            <Button size="lg" className="bg-transparent border-2 border-white/30 text-white hover:bg-white hover:text-black backdrop-blur-sm">
               Contact Support
             </Button>
           </div>

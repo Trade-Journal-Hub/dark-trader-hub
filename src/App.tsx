@@ -59,9 +59,9 @@ const App = () => (
             <Suspense fallback={<PageLoadingFallback />}>
               <Routes>
                 {/* Public routes with lazy loading */}
-                <Route path="/" element={<Index />} />
-                <Route path="/features" element={<Features />} />
-                <Route path="/pricing" element={<Pricing />} />
+              <Route path="/" element={<Index />} />
+              <Route path="/features" element={<Features />} />
+              <Route path="/pricing" element={<Pricing />} />
                 <Route path="/brokers" element={<SupportedBrokers />} />
                 <Route path="/contact" element={<ContactUs />} />
                 

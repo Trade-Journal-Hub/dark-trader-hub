@@ -50,26 +50,26 @@ const ContactUs = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
       <Navigation />
       
       {/* Hero Section */}
-      <section className="pt-24 pb-16 bg-gradient-to-br from-background via-background to-primary/5">
+      <section className="pt-24 pb-16 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="animate-fade-in">
-            <Badge className="mb-4 bg-blue-500/10 text-blue-400 border-blue-500/20">
+            <Badge className="mb-4 bg-white/10 text-white border-white/20 backdrop-blur-sm">
               💬 WE'RE HERE TO HELP
             </Badge>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
               Get in{' '}
-              <span className="bg-gradient-primary bg-clip-text text-transparent">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
                 Touch
               </span>{' '}
               With Us
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
               Have questions about TradeJournal Pro? Our expert support team is ready to help you succeed. 
-              <strong className="text-primary"> Average response time: 2 hours</strong>
+              <strong className="text-cyan-400"> Average response time: 2 hours</strong>
             </p>
           </div>
         </div>
@@ -78,24 +78,27 @@ const ContactUs = () => {
       {/* Contact Methods */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            Choose Your Preferred Contact Method
+          <h2 className="text-3xl font-bold text-center mb-12 text-white">
+            Choose Your Preferred 
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
+              Contact Method
+            </span>
           </h2>
           
           <div className="grid md:grid-cols-3 gap-8 mb-16">
             {contactMethods.map((method, index) => (
               <div 
                 key={index}
-                className="bg-card rounded-2xl p-8 border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-elegant hover:scale-105 animate-fade-in"
+                className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-elegant hover:scale-105 animate-fade-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-primary rounded-full mb-4">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mb-4">
                   {method.icon}
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{method.title}</h3>
-                <p className="text-muted-foreground mb-4">{method.description}</p>
-                <p className="font-semibold text-primary mb-2">{method.contact}</p>
-                <p className="text-sm text-muted-foreground">{method.response}</p>
+                <h3 className="text-xl font-semibold mb-2 text-white">{method.title}</h3>
+                <p className="text-gray-300 mb-4">{method.description}</p>
+                <p className="font-semibold text-cyan-400 mb-2">{method.contact}</p>
+                <p className="text-sm text-gray-400">{method.response}</p>
               </div>
             ))}
           </div>
@@ -103,12 +106,12 @@ const ContactUs = () => {
       </section>
 
       {/* Contact Form */}
-      <section className="py-16 bg-gradient-to-br from-primary/5 to-background">
+      <section className="py-16 bg-black">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-card rounded-2xl p-8 border border-border shadow-elegant">
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 shadow-elegant">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-4">Send Us a Message</h2>
-              <p className="text-muted-foreground">
+              <h2 className="text-3xl font-bold mb-4 text-white">Send Us a Message</h2>
+              <p className="text-gray-300">
                 Fill out the form below and we'll get back to you within 4 hours
               </p>
             </div>
@@ -116,7 +119,7 @@ const ContactUs = () => {
             <form className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Full Name</label>
+                  <label className="block text-sm font-medium mb-2 text-white">Full Name</label>
                   <Input placeholder="Enter your full name" className="border-border focus:border-primary" />
                 </div>
                 <div>
@@ -166,24 +169,27 @@ const ContactUs = () => {
       </section>
 
       {/* Support Topics */}
-      <section className="py-16">
+      <section className="py-16 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            What Can We Help You With?
+          <h2 className="text-3xl font-bold text-center mb-12 text-white">
+            What Can We Help You 
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
+              With?
+            </span>
           </h2>
           
           <div className="grid md:grid-cols-3 gap-8">
             {supportTopics.map((topic, index) => (
               <div 
                 key={index}
-                className="text-center p-6 bg-card rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-elegant animate-fade-in"
+                className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 hover:border-cyan-400/50 transition-all duration-300 hover:shadow-elegant animate-fade-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-primary rounded-full mb-4">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mb-4">
                   {topic.icon}
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{topic.title}</h3>
-                <p className="text-muted-foreground">{topic.description}</p>
+                <h3 className="text-xl font-semibold mb-3 text-white">{topic.title}</h3>
+                <p className="text-gray-300">{topic.description}</p>
               </div>
             ))}
           </div>
@@ -191,7 +197,7 @@ const ContactUs = () => {
       </section>
 
       {/* FAQ Quick Links */}
-      <section className="py-16 bg-gradient-to-r from-primary/10 to-secondary/10">
+      <section className="py-16 bg-black">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-4">
             Need Quick Answers?
@@ -211,7 +217,7 @@ const ContactUs = () => {
       </section>
 
       {/* Business Hours */}
-      <section className="py-16">
+      <section className="py-16 bg-black">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="bg-card rounded-2xl p-8 border border-border">
             <Clock className="h-12 w-12 text-primary mx-auto mb-4" />

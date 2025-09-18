@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Check, Star, Zap, Crown } from 'lucide-react';
 import { SEOHead, SEOConfigs } from '@/components/SEOHead';
+import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 
 const Pricing = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
       <SEOHead {...SEOConfigs.pricing} />
       <Navigation />
       <PricingContent />
@@ -112,38 +113,38 @@ const PricingContent = () => {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="pt-24 pb-16 bg-gradient-to-br from-background via-background to-primary/5">
+      <section className="pt-24 pb-16 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="animate-fade-in">
-            <Badge className="mb-4 bg-primary/10 text-primary border-primary/20">
+            <Badge className="mb-4 bg-white/10 text-white border-white/20 backdrop-blur-sm">
               🔥 LIMITED TIME OFFER
             </Badge>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
               Choose Your{' '}
-              <span className="bg-gradient-primary bg-clip-text text-transparent">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400">
                 Trading Success
               </span>{' '}
               Plan
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
               Join thousands of successful traders who've transformed their trading journey with our industry-leading tools. 
-              <strong className="text-primary"> Start your 14-day free trial today!</strong>
+              <strong className="text-cyan-400"> Start your 14-day free trial today!</strong>
             </p>
           </div>
         </div>
       </section>
 
       {/* Pricing Cards */}
-      <section className="py-16">
+      <section className="py-16 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center bg-card rounded-full p-1 border border-border">
-              <button className="px-6 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium">
+            <div className="inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full p-1 border border-white/20">
+              <InteractiveHoverButton className="px-6 py-2 rounded-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white text-sm font-medium border-0">
                 Monthly
-              </button>
-              <button className="px-6 py-2 rounded-full text-muted-foreground text-sm font-medium hover:text-foreground">
+              </InteractiveHoverButton>
+              <InteractiveHoverButton className="px-6 py-2 rounded-full text-gray-300 text-sm font-medium hover:text-white border-0 bg-transparent">
                 Yearly (Save up to 56%)
-              </button>
+              </InteractiveHoverButton>
             </div>
           </div>
 
@@ -151,27 +152,27 @@ const PricingContent = () => {
             {plans.map((plan, index) => (
               <div
                 key={plan.name}
-                className={`relative bg-card rounded-2xl p-8 border transition-all duration-300 hover:shadow-elegant hover:scale-105 animate-fade-in ${
+                className={`relative bg-white/10 backdrop-blur-sm rounded-2xl p-8 border transition-all duration-300 hover:shadow-elegant hover:scale-105 animate-fade-in ${
                   plan.popular 
-                    ? 'border-primary shadow-glow' 
-                    : 'border-border hover:border-primary/50'
+                    ? 'border-cyan-400 shadow-lg shadow-cyan-400/20' 
+                    : 'border-white/20 hover:border-cyan-400/50'
                 }`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-gradient-primary text-white px-4 py-1">
+                    <Badge className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white px-4 py-1">
                       MOST POPULAR
                     </Badge>
                   </div>
                 )}
                 
                 <div className="text-center mb-8">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-primary rounded-full mb-4">
+                  <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mb-4">
                     {plan.icon}
                   </div>
-                  <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                  <p className="text-muted-foreground mb-4">{plan.description}</p>
+                  <h3 className="text-2xl font-bold mb-2 text-white">{plan.name}</h3>
+                  <p className="text-gray-300 mb-4">{plan.description}</p>
                   
                   <div className="mb-4">
                     <Badge variant="secondary" className="bg-green-500/10 text-green-400 border-green-500/20">
@@ -180,31 +181,30 @@ const PricingContent = () => {
                   </div>
                   
                   <div className="flex items-center justify-center gap-2 mb-2">
-                    <span className="text-3xl font-bold">{plan.price}</span>
-                    <span className="text-muted-foreground">{plan.period}</span>
+                    <span className="text-3xl font-bold text-white">{plan.price}</span>
+                    <span className="text-gray-400">{plan.period}</span>
                   </div>
-                  <p className="text-sm text-muted-foreground line-through">{plan.originalPrice}</p>
+                  <p className="text-sm text-gray-400 line-through">{plan.originalPrice}</p>
                 </div>
 
                 <ul className="space-y-3 mb-8">
                   {plan.features.map((feature, idx) => (
                     <li key={idx} className="flex items-center gap-3">
                       <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
-                      <span className="text-sm">{feature}</span>
+                      <span className="text-sm text-gray-300">{feature}</span>
                     </li>
                   ))}
                 </ul>
 
-                <Button 
+                <InteractiveHoverButton 
                   className={`w-full ${
                     plan.popular 
-                      ? 'bg-gradient-primary hover:shadow-glow' 
-                      : 'bg-card border border-primary text-primary hover:bg-primary hover:text-primary-foreground'
-                  }`}
-                  size="lg"
+                      ? 'bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white border-0 shadow-lg' 
+                      : 'bg-transparent border-2 border-white/30 text-white hover:bg-white hover:text-black'
+                  } py-3 px-6 text-lg font-semibold`}
                 >
-                  Start Free Trial
-                </Button>
+                  {plan.popular ? 'Start Pro Trial' : plan.name === 'Enterprise' ? 'Contact Sales' : 'Start Free Trial'}
+                </InteractiveHoverButton>
               </div>
             ))}
           </div>
@@ -223,10 +223,13 @@ const PricingContent = () => {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16 bg-gradient-to-br from-primary/5 to-background">
+      <section className="py-16 bg-black">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            Frequently Asked Questions
+          <h2 className="text-3xl font-bold text-center mb-12 text-white">
+            Frequently Asked 
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
+              Questions
+            </span>
           </h2>
           
           <div className="space-y-6">
@@ -250,13 +253,49 @@ const PricingContent = () => {
             ].map((faq, index) => (
               <div 
                 key={index} 
-                className="bg-card rounded-lg p-6 border border-border hover:border-primary/50 transition-colors animate-fade-in"
+                className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20 hover:border-cyan-400/50 transition-colors animate-fade-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <h4 className="font-semibold mb-2">{faq.q}</h4>
-                <p className="text-muted-foreground">{faq.a}</p>
+                <h4 className="font-semibold mb-2 text-white">{faq.q}</h4>
+                <p className="text-gray-300">{faq.a}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Section with Interactive Buttons */}
+      <section className="py-16 bg-black">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 shadow-lg">
+            <h3 className="text-2xl md:text-3xl font-bold mb-4 text-white">
+              Ready to Transform Your Trading?
+            </h3>
+            <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
+              Join thousands of successful traders who've improved their performance with our advanced analytics and insights.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <InteractiveHoverButton className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white border-0 px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl">
+                Start Your Free Trial
+              </InteractiveHoverButton>
+              
+              <InteractiveHoverButton className="bg-transparent border-2 border-white/30 text-white hover:bg-white hover:text-black px-8 py-4 text-lg font-semibold backdrop-blur-sm">
+                View Live Demo
+              </InteractiveHoverButton>
+            </div>
+            
+            <div className="mt-6 text-sm text-muted-foreground">
+              <span className="inline-flex items-center gap-2">
+                <Check className="w-4 h-4 text-success" />
+                No credit card required
+              </span>
+              <span className="mx-4">•</span>
+              <span className="inline-flex items-center gap-2">
+                <Check className="w-4 h-4 text-success" />
+                14-day money-back guarantee
+              </span>
+            </div>
           </div>
         </div>
       </section>
