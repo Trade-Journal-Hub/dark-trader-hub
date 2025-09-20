@@ -1,5 +1,5 @@
 import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import { StickyFooter } from '@/components/ui/sticky-footer';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Check, ArrowRight, Zap, Shield, Clock } from 'lucide-react';
@@ -258,7 +258,7 @@ const SupportedBrokers = () => {
         </div>
       </section>
 
-      <Footer />
+      <StickyFooter />
     </div>
   );
 };

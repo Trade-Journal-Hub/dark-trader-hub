@@ -1,8 +1,13 @@
+/**
+ * Enhanced Forgot Password Page - Nature-themed Design
+ * Consistent with the enhanced authentication system
+ */
+
 import React from 'react';
 import EnhancedForgotPassword from '@/components/auth/EnhancedForgotPassword';
 import { SEOHead } from '@/components/SEOHead';
 
-const ForgotPassword: React.FC = () => {
+const EnhancedForgotPasswordPage = () => {
   return (
     <>
       <SEOHead 
@@ -15,4 +20,4 @@ const ForgotPassword: React.FC = () => {
   );
 };
 
-export default ForgotPassword;
+export default EnhancedForgotPasswordPage;

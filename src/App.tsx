@@ -15,11 +15,13 @@ const Features = lazy(() => import("./pages/Features"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const SupportedBrokers = lazy(() => import("./pages/SupportedBrokers"));
 const ContactUs = lazy(() => import("./pages/ContactUs"));
+// Removed ScrollStackTest - integrated into home page
 
 // Auth pages (lazy loaded)
 const Login = lazy(() => import("./pages/auth/Login"));
 const Register = lazy(() => import("./pages/auth/Register"));
 const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
+// Enhanced auth integrated into main login/register pages
 
 // Dashboard pages (lazy loaded for better initial load)
 const DashboardLayout = lazy(() => import("./pages/dashboard/DashboardLayout"));
@@ -59,16 +61,18 @@ const App = () => (
             <Suspense fallback={<PageLoadingFallback />}>
               <Routes>
                 {/* Public routes with lazy loading */}
-              <Route path="/" element={<Index />} />
-              <Route path="/features" element={<Features />} />
-              <Route path="/pricing" element={<Pricing />} />
+                <Route path="/" element={<Index />} />
+                <Route path="/features" element={<Features />} />
+                <Route path="/pricing" element={<Pricing />} />
                 <Route path="/brokers" element={<SupportedBrokers />} />
                 <Route path="/contact" element={<ContactUs />} />
+                {/* ScrollStackTest removed - integrated into home page */}
                 
                 {/* Authentication routes with lazy loading */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
+                {/* Enhanced auth integrated into main login/register pages */}
                 
                 {/* Protected dashboard routes with lazy loading */}
                 <Route path="/dashboard" element={<Navigate to="/dashboard/overview" replace />} />
@@ -123,3 +127,4 @@ const App = () => (
 );
 
 export default App;
+

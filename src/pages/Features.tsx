@@ -5,7 +5,7 @@
 
 import React, { memo, useMemo } from 'react';
 import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import { StickyFooter } from '@/components/ui/sticky-footer';
 import { StickyScroll } from '@/components/ui/sticky-scroll-reveal';
 import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 import { Badge } from '@/components/ui/badge';
@@ -73,21 +73,21 @@ const Features = memo(() => {
             <StatCard icon={<Users className="w-4 h-4 text-blue-500" />} text="Daily Users" value="15,000+" />
           </div>
           <div className="absolute bottom-4 left-4 right-4">
-            <div className="bg-black/80 backdrop-blur-sm rounded-lg p-3">
-              <div className="grid grid-cols-2 gap-2 text-xs text-white">
-                <div className="flex items-center gap-1">
+            <div className="bg-black/80 backdrop-blur-sm rounded-lg p-4">
+              <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-white">
+                <div className="flex items-center gap-1 bg-white/10 rounded-full px-3 py-1">
                   <CheckCircle className="w-3 h-3 text-green-400" />
                   <span>P&L Tracking</span>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 bg-white/10 rounded-full px-3 py-1">
                   <Camera className="w-3 h-3 text-blue-400" />
                   <span>Screenshots</span>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 bg-white/10 rounded-full px-3 py-1">
                   <Brain className="w-3 h-3 text-purple-400" />
                   <span>AI Insights</span>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 bg-white/10 rounded-full px-3 py-1">
                   <Calculator className="w-3 h-3 text-yellow-400" />
                   <span>Tax Reports</span>
                 </div>
@@ -104,24 +104,27 @@ const Features = memo(() => {
         <div className="relative h-full w-full bg-gradient-to-br from-blue-500/20 via-indigo-500/20 to-purple-500/20 rounded-lg overflow-hidden">
           <OptimizedImage src={dashboardMockup} alt="Analytics Dashboard" className="w-full h-full object-cover opacity-80" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-          <div className="absolute top-4 left-4 right-4 grid grid-cols-2 gap-2">
-            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-3 text-center">
-              <BarChart3 className="w-5 h-5 text-blue-500 mx-auto mb-1" />
-              <div className="text-xs font-semibold text-gray-800">Performance</div>
-              <div className="text-lg font-bold text-blue-600">+18.5%</div>
-            </div>
-            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-3 text-center">
-              <Shield className="w-5 h-5 text-red-500 mx-auto mb-1" />
-              <div className="text-xs font-semibold text-gray-800">Risk Score</div>
-              <div className="text-lg font-bold text-red-600">Low</div>
+          <div className="absolute top-4 left-4 right-4">
+            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4 text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <BarChart3 className="w-6 h-6 text-blue-500" />
+                <span className="text-sm font-semibold text-gray-800">Performance Dashboard</span>
+              </div>
+              <div className="text-2xl font-bold text-blue-600">+18.5% Returns</div>
+              <div className="text-xs text-gray-600">Risk Score: Low</div>
             </div>
           </div>
           <div className="absolute bottom-4 left-4 right-4">
-            <div className="bg-black/80 backdrop-blur-sm rounded-lg p-3">
-              <div className="flex justify-between text-white text-xs">
-                <div><span className="text-gray-300">Total P&L:</span> <span className="text-green-400 font-bold">₹2,47,500</span></div>
-                <div><span className="text-gray-300">Trades:</span> <span className="text-blue-400 font-bold">1,247</span></div>
-                <div><span className="text-gray-300">Win Rate:</span> <span className="text-purple-400 font-bold">73.2%</span></div>
+            <div className="bg-black/80 backdrop-blur-sm rounded-lg p-4 text-center">
+              <div className="text-white text-sm">
+                <div className="mb-2">
+                  <span className="text-gray-300">Total P&L:</span> 
+                  <span className="text-green-400 font-bold ml-2">₹2,47,500</span>
+                </div>
+                <div className="flex items-center justify-center gap-4 text-xs">
+                  <span><span className="text-gray-300">Trades:</span> <span className="text-blue-400 font-bold">1,247</span></span>
+                  <span><span className="text-gray-300">Win Rate:</span> <span className="text-purple-400 font-bold">73.2%</span></span>
+                </div>
               </div>
             </div>
           </div>
@@ -136,22 +139,23 @@ const Features = memo(() => {
           <OptimizedImage src={portfolioAnalyticsMockup} alt="Portfolio Analytics" className="w-full h-full object-cover opacity-80" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
           <div className="absolute top-4 left-4 right-4">
-            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4">
-              <div className="grid grid-cols-3 gap-3 text-center">
-                <div>
-                  <PieChart className="w-4 h-4 text-purple-500 mx-auto mb-1" />
-                  <div className="text-xs text-gray-600">AUM</div>
-                  <div className="text-sm font-bold text-purple-600">₹2,500Cr+</div>
+            <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4 text-center">
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <PieChart className="w-6 h-6 text-purple-500" />
+                <span className="text-sm font-semibold text-gray-800">Portfolio Engine</span>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-600">AUM Tracked:</span>
+                  <span className="text-sm font-bold text-purple-600">₹2,500Cr+</span>
                 </div>
-                <div>
-                  <TrendingUp className="w-4 h-4 text-green-500 mx-auto mb-1" />
-                  <div className="text-xs text-gray-600">Returns</div>
-                  <div className="text-sm font-bold text-green-600">18.5%</div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-600">Avg Returns:</span>
+                  <span className="text-sm font-bold text-green-600">18.5%</span>
                 </div>
-                <div>
-                  <Activity className="w-4 h-4 text-blue-500 mx-auto mb-1" />
-                  <div className="text-xs text-gray-600">Tracking</div>
-                  <div className="text-sm font-bold text-blue-600">Real-time</div>
+                <div className="flex items-center justify-center gap-1 mt-2">
+                  <Activity className="w-3 h-3 text-blue-500" />
+                  <span className="text-xs text-blue-600 font-medium">Real-time Tracking</span>
                 </div>
               </div>
             </div>
@@ -178,11 +182,21 @@ const Features = memo(() => {
             </div>
           </div>
           <div className="absolute bottom-4 left-4 right-4">
-            <div className="bg-black/80 backdrop-blur-sm rounded-lg p-3">
-              <div className="grid grid-cols-3 gap-3 text-center text-white text-xs">
-                <div><div className="text-gray-300">Drawdown</div><div className="text-green-400 font-bold">-3.2%</div></div>
-                <div><div className="text-gray-300">Protected</div><div className="text-blue-400 font-bold">₹1,200Cr+</div></div>
-                <div><div className="text-gray-300">Alerts</div><div className="text-yellow-400 font-bold">50K+</div></div>
+            <div className="bg-black/80 backdrop-blur-sm rounded-lg p-4 text-center">
+              <div className="text-white">
+                <div className="text-lg font-bold text-green-400 mb-2">-3.2% Max Drawdown</div>
+                <div className="flex items-center justify-center gap-4 text-xs">
+                  <span className="flex items-center gap-1">
+                    <Shield className="w-3 h-3 text-blue-400" />
+                    <span className="text-gray-300">Protected:</span> 
+                    <span className="text-blue-400 font-bold">₹1,200Cr+</span>
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Activity className="w-3 h-3 text-yellow-400" />
+                    <span className="text-gray-300">Alerts:</span> 
+                    <span className="text-yellow-400 font-bold">50K+</span>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -200,14 +214,14 @@ const Features = memo(() => {
               <Brain className="w-16 h-16 mx-auto mb-4 text-cyan-400" />
               <h3 className="text-2xl font-bold mb-2">AI Engine</h3>
               <p className="text-gray-300 mb-4">94% Accuracy Rate</p>
-              <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="space-y-3 text-sm">
                 <div className="bg-white/20 rounded-lg p-3">
-                  <div className="text-cyan-400 font-bold">Pattern Recognition</div>
-                  <div className="text-gray-300">15+ Patterns</div>
+                  <div className="text-cyan-400 font-bold mb-1">Pattern Recognition</div>
+                  <div className="text-gray-300">15+ Trading Patterns Detected</div>
                 </div>
                 <div className="bg-white/20 rounded-lg p-3">
-                  <div className="text-purple-400 font-bold">Predictions</div>
-                  <div className="text-gray-300">Next Day Trends</div>
+                  <div className="text-purple-400 font-bold mb-1">AI Predictions</div>
+                  <div className="text-gray-300">Next Day Market Trends</div>
                 </div>
               </div>
             </div>
@@ -273,9 +287,7 @@ const Features = memo(() => {
         </div>
       ),
       Icon: Globe,
-      className: "col-span-1 sm:col-span-2 lg:col-span-2 animate-fade-in",
-      href: "/brokers",
-      cta: "View All Brokers"
+      className: "col-span-1 sm:col-span-2 lg:col-span-2 animate-fade-in"
     },
     {
       name: "AI-Powered Insights",
@@ -293,9 +305,7 @@ const Features = memo(() => {
         </div>
       ),
       Icon: Brain,
-      className: "col-span-1 sm:col-span-1 lg:col-span-1 animate-fade-in",
-      href: "/ai-insights",
-      cta: "Try AI Features"
+      className: "col-span-1 sm:col-span-1 lg:col-span-1 animate-fade-in"
     },
     {
       name: "Bank-Grade Security",
@@ -313,9 +323,7 @@ const Features = memo(() => {
         </div>
       ),
       Icon: Lock,
-      className: "col-span-1 sm:col-span-1 lg:col-span-1 animate-fade-in",
-      href: "/security",
-      cta: "Security Details"
+      className: "col-span-1 sm:col-span-1 lg:col-span-1 animate-fade-in"
     },
     {
       name: "Smart Alerts",
@@ -346,9 +354,7 @@ const Features = memo(() => {
         </div>
       ),
       Icon: Bell,
-      className: "col-span-1 sm:col-span-2 lg:col-span-2 animate-fade-in",
-      href: "/alerts",
-      cta: "Configure Alerts"
+      className: "col-span-1 sm:col-span-2 lg:col-span-2 animate-fade-in"
     },
     {
       name: "Tax Optimization",
@@ -366,9 +372,7 @@ const Features = memo(() => {
         </div>
       ),
       Icon: Calculator,
-      className: "col-span-1 sm:col-span-2 lg:col-span-2 animate-fade-in",
-      href: "/tax-tools",
-      cta: "Tax Calculator"
+      className: "col-span-1 sm:col-span-2 lg:col-span-2 animate-fade-in"
     },
     {
       name: "Time Analysis",
@@ -401,9 +405,7 @@ const Features = memo(() => {
         </div>
       ),
       Icon: Clock,
-      className: "col-span-1 sm:col-span-1 lg:col-span-1 animate-fade-in",
-      href: "/time-analysis",
-      cta: "View Analysis"
+      className: "col-span-1 sm:col-span-1 lg:col-span-1 animate-fade-in"
     }
   ], []);
 
@@ -455,13 +457,16 @@ const Features = memo(() => {
 
       {/* Enhanced Sticky Scroll Features */}
       <section className="py-20 bg-black relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div className="w-full relative">
           {/* Sticky Scroll */}
           <div className="mb-20">
             <StickyScroll content={stickyContent} />
           </div>
 
-          {/* Enhanced Bento Grid Power Features */}
+        </div>
+        
+        {/* Enhanced Bento Grid Power Features */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-white">
               Advanced{' '}
@@ -479,8 +484,6 @@ const Features = memo(() => {
                   background={feature.background}
                   Icon={feature.Icon}
                   description={feature.description}
-                  href={feature.href}
-                  cta={feature.cta}
                   style={{ animationDelay: `${index * 0.1}s` }}
                 />
               ))}
@@ -518,7 +521,7 @@ const Features = memo(() => {
         </div>
       </section>
 
-      <Footer />
+      <StickyFooter />
     </div>
   );
 });

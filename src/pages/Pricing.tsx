@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import { StickyFooter } from '@/components/ui/sticky-footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Check, Star, Zap, Crown } from 'lucide-react';
@@ -14,7 +14,7 @@ const Pricing = () => {
       <SEOHead {...SEOConfigs.pricing} />
       <Navigation />
       <PricingContent />
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };
@@ -405,7 +405,7 @@ const PricingContent = () => {
         </div>
       </section>
 
-      <Footer />
+      <StickyFooter />
     </div>
   );
 };

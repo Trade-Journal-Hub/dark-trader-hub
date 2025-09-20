@@ -4,6 +4,7 @@ import tradeJournalMockup from '@/assets/trade-journal-mockup.jpg';
 import portfolioAnalyticsMockup from '@/assets/portfolio-analytics-mockup.jpg';
 import riskManagementMockup from '@/assets/risk-management-mockup.jpg';
 
+
 const FeaturesSection = () => {
   const features = [
     {

@@ -1,5 +1,5 @@
 import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
+import { StickyFooter } from '@/components/ui/sticky-footer';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -240,7 +240,7 @@ const ContactUs = () => {
         </div>
       </section>
 
-      <Footer />
+      <StickyFooter />
     </div>
   );
 };

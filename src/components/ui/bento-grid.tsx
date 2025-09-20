@@ -1,7 +1,5 @@
-import { ArrowRight } from "lucide-react";
 import { ComponentPropsWithoutRef, ReactNode } from "react";
 
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface BentoGridProps extends ComponentPropsWithoutRef<"div"> {
@@ -15,8 +13,6 @@ interface BentoCardProps extends ComponentPropsWithoutRef<"div"> {
   background: ReactNode;
   Icon: React.ElementType;
   description: string;
-  href: string;
-  cta: string;
   style?: React.CSSProperties;
 }
 
@@ -40,8 +36,6 @@ const BentoCard = ({
   background,
   Icon,
   description,
-  href,
-  cta,
   style,
   ...props
 }: BentoCardProps) => (
@@ -59,50 +53,14 @@ const BentoCard = ({
     {...props}
   >
     <div>{background}</div>
-    <div className="p-4">
-      <div className="pointer-events-none z-10 flex transform-gpu flex-col gap-1 transition-all duration-300 lg:group-hover:-translate-y-10">
-        <Icon className="h-12 w-12 origin-left transform-gpu text-white transition-all duration-500 ease-out group-hover:scale-110 group-hover:text-cyan-400 group-hover:rotate-12 group-hover:drop-shadow-lg" />
-        <h3 className="text-xl font-semibold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-cyan-400 group-hover:to-purple-400 transition-all duration-500">
+    <div className="p-4 flex flex-col justify-end h-full">
+      <div className="pointer-events-none z-10 flex transform-gpu flex-col gap-2 transition-all duration-300">
+        <Icon className="h-10 w-10 origin-left transform-gpu text-white transition-all duration-500 ease-out group-hover:scale-105 group-hover:text-cyan-400 group-hover:rotate-6 group-hover:drop-shadow-lg" />
+        <h3 className="text-lg font-semibold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-cyan-400 group-hover:to-purple-400 transition-all duration-500 leading-tight">
           {name}
         </h3>
-        <p className="max-w-lg text-gray-300 leading-relaxed">{description}</p>
+        <p className="text-sm text-gray-300 leading-snug line-clamp-2 group-hover:text-gray-200 transition-colors duration-300">{description}</p>
       </div>
-
-      <div
-        className={cn(
-          "lg:hidden pointer-events-none flex w-full translate-y-0 transform-gpu flex-row items-center transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100",
-        )}
-      >
-        <Button
-          variant="link"
-          asChild
-          size="sm"
-          className="pointer-events-auto p-0 text-cyan-400 hover:text-cyan-300"
-        >
-          <a href={href}>
-            {cta}
-            <ArrowRight className="ms-2 h-4 w-4 rtl:rotate-180" />
-          </a>
-        </Button>
-      </div>
-    </div>
-
-    <div
-      className={cn(
-        "hidden lg:flex pointer-events-none absolute bottom-0 w-full translate-y-10 transform-gpu flex-row items-center p-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100",
-      )}
-    >
-      <Button
-        variant="link"
-        asChild
-        size="sm"
-        className="pointer-events-auto p-0"
-      >
-        <a href={href}>
-          {cta}
-          <ArrowRight className="ms-2 h-4 w-4 rtl:rotate-180" />
-        </a>
-      </Button>
     </div>
 
     <div className="pointer-events-none absolute inset-0 transform-gpu transition-all duration-700 group-hover:bg-gradient-to-br group-hover:from-cyan-400/10 group-hover:via-purple-400/5 group-hover:to-pink-400/10" />
