@@ -3,11 +3,10 @@ Analytics service for calculating trading metrics and insights
 """
 
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import numpy as np
-import pandas as pd
 
 from app.models.trade import Trade, TradeCollection
 from app.services.advanced_analytics import advanced_analytics
@@ -78,6 +77,11 @@ class AnalyticsService:
             daily_returns = self._calculate_daily_returns(trades)
             sharpe_ratio = self._calculate_sharpe_ratio(daily_returns)
             max_drawdown = self._calculate_max_drawdown(daily_returns)
+            risk_reward_ratio = self._calculate_risk_reward_ratio(trades)
+
+            # Calculate additional metrics
+            avg_hold_time = self._calculate_avg_hold_time(trades)
+            current_balance = self._calculate_current_balance(trades)
 
             # Calculate symbol performance
             symbol_performance = self._calculate_symbol_performance(trades)
@@ -107,6 +111,9 @@ class AnalyticsService:
                     ),
                     "sharpe_ratio": round(sharpe_ratio, 2),
                     "max_drawdown": round(max_drawdown, 2),
+                    "risk_reward_ratio": round(risk_reward_ratio, 2) if risk_reward_ratio != 0 else "-",
+                    "avg_hold_time": avg_hold_time,
+                    "current_balance": round(current_balance, 2),
                 },
                 "performance": {
                     "best_trade": (
@@ -472,6 +479,11 @@ class AnalyticsService:
     ) -> List[Trade]:
         """Get user's trades from Firestore."""
         try:
+            # Development mode bypass
+            if not firebase_service.db:
+                logger.info("Development mode: Returning sample analytics data")
+                return self._get_sample_trades()
+            
             trades_ref = firebase_service.db.collection("trades")
             query = trades_ref.where("user_id", "==", user_id)
 
@@ -509,6 +521,191 @@ class AnalyticsService:
         except Exception as e:
             logger.error(f"Error getting user trades: {str(e)}")
             return []
+
+    def _get_sample_trades(self) -> List[Trade]:
+        """Get sample trades for development mode."""
+        from datetime import datetime
+        
+        sample_trades = [
+            Trade(
+                user_id="dev-user-123",
+                symbol="NIFTY2591625250PE",
+                side="BUY",
+                quantity=1500.0,
+                price=75.0,
+                date=datetime(2025, 9, 15, 14, 23, 40),
+                time="14:23:40",
+                pnl=0.0,
+                fees=0.0
+            ),
+            Trade(
+                user_id="dev-user-123",
+                symbol="NIFTY2591625250PE",
+                side="SELL",
+                quantity=1500.0,
+                price=85.0,
+                date=datetime(2025, 9, 15, 14, 33, 40),
+                time="14:33:40",
+                pnl=15000.0,
+                fees=0.0
+            ),
+            Trade(
+                user_id="dev-user-123",
+                symbol="NIFTY2591625250PE",
+                side="BUY",
+                quantity=1500.0,
+                price=50.27,
+                date=datetime(2025, 9, 16, 14, 27, 40),
+                time="14:27:40",
+                pnl=0.0,
+                fees=0.0
+            ),
+            Trade(
+                user_id="dev-user-123",
+                symbol="NIFTY2591625250PE",
+                side="SELL",
+                quantity=1500.0,
+                price=48.71,
+                date=datetime(2025, 9, 16, 14, 27, 52),
+                time="14:27:52",
+                pnl=-2340.0,
+                fees=0.0
+            ),
+            Trade(
+                user_id="dev-user-123",
+                symbol="NIFTY2592325250CE",
+                side="BUY",
+                quantity=1800.0,
+                price=133.0,
+                date=datetime(2025, 9, 17, 13, 27, 52),
+                time="13:27:52",
+                pnl=0.0,
+                fees=0.0
+            ),
+            Trade(
+                user_id="dev-user-123",
+                symbol="NIFTY2592325250CE",
+                side="SELL",
+                quantity=1800.0,
+                price=129.5,
+                date=datetime(2025, 9, 17, 13, 33, 52),
+                time="13:33:52",
+                pnl=-6300.0,
+                fees=0.0
+            ),
+            Trade(
+                user_id="dev-user-123",
+                symbol="NIFTY2592325250CE",
+                side="BUY",
+                quantity=1800.0,
+                price=114.0,
+                date=datetime(2025, 9, 18, 11, 14, 32),
+                time="11:14:32",
+                pnl=0.0,
+                fees=0.0
+            ),
+            Trade(
+                user_id="dev-user-123",
+                symbol="NIFTY2592325250CE",
+                side="SELL",
+                quantity=1800.0,
+                price=158.0,
+                date=datetime(2025, 9, 18, 11, 20, 52),
+                time="11:20:52",
+                pnl=79200.0,
+                fees=0.0
+            ),
+            Trade(
+                user_id="dev-user-123",
+                symbol="NIFTY2592325250CE",
+                side="BUY",
+                quantity=1500.0,
+                price=101.0,
+                date=datetime(2025, 9, 19, 13, 17, 52),
+                time="13:17:52",
+                pnl=0.0,
+                fees=0.0
+            ),
+            Trade(
+                user_id="dev-user-123",
+                symbol="NIFTY2592325250CE",
+                side="SELL",
+                quantity=1500.0,
+                price=98.0,
+                date=datetime(2025, 9, 19, 13, 21, 52),
+                time="13:21:52",
+                pnl=-4500.0,
+                fees=0.0
+            ),
+            Trade(
+                user_id="dev-user-123",
+                symbol="NIFTY2592325250CE",
+                side="BUY",
+                quantity=1500.0,
+                price=201.1,
+                date=datetime(2025, 9, 20, 13, 2, 52),
+                time="13:02:52",
+                pnl=0.0,
+                fees=0.0
+            ),
+            Trade(
+                user_id="dev-user-123",
+                symbol="NIFTY2592325250CE",
+                side="SELL",
+                quantity=1500.0,
+                price=92.4,
+                date=datetime(2025, 9, 20, 14, 9, 52),
+                time="14:09:52",
+                pnl=-163050.0,
+                fees=0.0
+            ),
+            Trade(
+                user_id="dev-user-123",
+                symbol="RELIANCE",
+                side="SELL",
+                quantity=100.0,
+                price=1444.0,
+                date=datetime(2025, 9, 21, 14, 9, 52),
+                time="14:09:52",
+                pnl=3300.0,
+                fees=0.0
+            ),
+            Trade(
+                user_id="dev-user-123",
+                symbol="RELIANCE",
+                side="BUY",
+                quantity=100.0,
+                price=1411.0,
+                date=datetime(2025, 9, 21, 14, 9, 52),
+                time="14:09:52",
+                pnl=3300.0,
+                fees=0.0
+            ),
+            Trade(
+                user_id="dev-user-123",
+                symbol="NIFTY2591625250PE",
+                side="BUY",
+                quantity=1500.0,
+                price=83.0,
+                date=datetime(2025, 12, 9, 10, 3, 40),
+                time="10:03:40",
+                pnl=0.0,
+                fees=0.0
+            ),
+            Trade(
+                user_id="dev-user-123",
+                symbol="NIFTY2591625250PE",
+                side="SELL",
+                quantity=1500.0,
+                price=101.0,
+                date=datetime(2025, 12, 9, 10, 33, 40),
+                time="10:33:40",
+                pnl=27000.0,
+                fees=0.0
+            )
+        ]
+        
+        return sample_trades
 
     def _calculate_daily_returns(self, trades: List[Trade]) -> List[float]:
         """Calculate daily returns from trades."""
@@ -629,10 +826,80 @@ class AnalyticsService:
         # Implementation for correlation analysis
         return {}
 
-    def _calculate_avg_hold_time(self, trades: List[Trade]) -> Optional[str]:
+    def _calculate_avg_hold_time(self, trades: List[Trade]) -> str:
         """Calculate average hold time for trades."""
-        # Implementation for average hold time calculation
-        return None
+        if not trades:
+            return "0min"
+        
+        durations = []
+        for trade in trades:
+            if trade.duration:
+                # Parse duration string (e.g., "45min", "2h 30min")
+                duration_minutes = self._parse_duration(trade.duration)
+                if duration_minutes > 0:
+                    durations.append(duration_minutes)
+        
+        if not durations:
+            return "0min"
+        
+        avg_minutes = np.mean(durations)
+        if avg_minutes < 60:
+            return f"{int(avg_minutes)}min"
+        else:
+            hours = int(avg_minutes // 60)
+            minutes = int(avg_minutes % 60)
+            return f"{hours}h {minutes}min"
+
+    def _parse_duration(self, duration_str: str) -> float:
+        """Parse duration string to minutes."""
+        if not duration_str:
+            return 0.0
+        
+        duration_str = duration_str.lower().strip()
+        total_minutes = 0.0
+        
+        # Handle hours
+        if 'h' in duration_str:
+            hour_match = duration_str.split('h')[0]
+            try:
+                hours = float(hour_match.strip())
+                total_minutes += hours * 60
+                duration_str = duration_str.split('h', 1)[1] if 'h' in duration_str else ''
+            except ValueError:
+                pass
+        
+        # Handle minutes
+        if 'min' in duration_str:
+            min_match = duration_str.split('min')[0]
+            try:
+                minutes = float(min_match.strip())
+                total_minutes += minutes
+            except ValueError:
+                pass
+        
+        return total_minutes
+
+    def _calculate_risk_reward_ratio(self, trades: List[Trade]) -> float:
+        """Calculate average risk/reward ratio."""
+        if not trades:
+            return 0.0
+        
+        ratios = []
+        for trade in trades:
+            if trade.stop_loss and trade.take_profit:
+                risk = abs(trade.price - trade.stop_loss)
+                reward = abs(trade.take_profit - trade.price)
+                if risk > 0:
+                    ratios.append(reward / risk)
+        
+        return np.mean(ratios) if ratios else 0.0
+
+    def _calculate_current_balance(self, trades: List[Trade], initial_balance: float = 10000) -> float:
+        """Calculate current balance based on trades."""
+        if not trades:
+            return initial_balance
+        
+        return initial_balance + sum(t.calculate_net_pnl() for t in trades)
 
     def _generate_performance_insights(self, trades: List[Trade]) -> List[str]:
         """Generate performance insights."""
@@ -678,7 +945,7 @@ class AnalyticsService:
         return insights
 
     def _get_empty_analytics(self) -> Dict[str, Any]:
-        """Return empty analytics structure."""
+        """Return empty analytics structure with - for unavailable data."""
         return {
             "summary": {
                 "total_trades": 0,
@@ -686,9 +953,12 @@ class AnalyticsService:
                 "win_rate": 0,
                 "avg_win": 0,
                 "avg_loss": 0,
-                "profit_factor": 0,
-                "sharpe_ratio": 0,
-                "max_drawdown": 0,
+                "profit_factor": "-",
+                "sharpe_ratio": "-",
+                "max_drawdown": "-",
+                "risk_reward_ratio": "-",
+                "avg_hold_time": "-",
+                "current_balance": "-",
             },
             "performance": {
                 "best_trade": None,
@@ -696,41 +966,46 @@ class AnalyticsService:
                 "monthly_performance": [],
             },
             "symbols": {},
-            "risk_metrics": {"sharpe_ratio": 0, "max_drawdown": 0, "volatility": 0},
+            "risk_metrics": {
+                "sharpe_ratio": "-", 
+                "max_drawdown": "-", 
+                "volatility": "-",
+                "risk_reward_ratio": "-"
+            },
         }
 
     def _get_empty_performance_analytics(self) -> Dict[str, Any]:
-        """Return empty performance analytics structure."""
+        """Return empty performance analytics structure with - for unavailable data."""
         return {
             "period_performance": [],
             "cumulative_performance": [],
             "rolling_metrics": [],
-            "performance_insights": [],
+            "performance_insights": ["No data available for analysis"],
         }
 
     def _get_empty_risk_analysis(self) -> Dict[str, Any]:
-        """Return empty risk analysis structure."""
+        """Return empty risk analysis structure with - for unavailable data."""
         return {
             "risk_metrics": {
-                "volatility": 0,
-                "sharpe_ratio": 0,
-                "max_drawdown": 0,
-                "var_95": 0,
-                "var_99": 0,
+                "volatility": "-",
+                "sharpe_ratio": "-",
+                "max_drawdown": "-",
+                "var_95": "-",
+                "var_99": "-",
             },
             "position_analysis": {},
             "correlation_analysis": {},
-            "risk_insights": [],
+            "risk_insights": ["No data available for risk analysis"],
         }
 
     def _get_empty_symbol_analytics(self) -> Dict[str, Any]:
-        """Return empty symbol analytics structure."""
+        """Return empty symbol analytics structure with - for unavailable data."""
         return {
             "total_trades": 0,
             "total_pnl": 0,
             "win_rate": 0,
             "avg_trade_size": 0,
-            "avg_hold_time": None,
+            "avg_hold_time": "-",
             "best_trade": None,
             "worst_trade": None,
         }

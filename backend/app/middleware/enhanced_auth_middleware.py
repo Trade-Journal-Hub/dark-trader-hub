@@ -51,8 +51,9 @@ class EnhancedAuthMiddleware:
         self.app = app
         self.app_check_enabled = os.getenv('APP_CHECK_REQUIRED', 'false').lower() == 'true'
         self.debug_mode = os.getenv('FIREBASE_APP_CHECK_DEBUG', 'false').lower() == 'true'
+        self.development_mode = os.getenv('FLASK_ENV', 'production') == 'development'
         
-        logger.info(f"Enhanced Auth Middleware initialized - App Check: {self.app_check_enabled}, Debug: {self.debug_mode}")
+        logger.info(f"Enhanced Auth Middleware initialized - App Check: {self.app_check_enabled}, Debug: {self.debug_mode}, Development: {self.development_mode}")
 
     def __call__(self, environ, start_response):
         """WSGI middleware entry point with enhanced security"""
@@ -66,14 +67,29 @@ class EnhancedAuthMiddleware:
         # Log security context
         logger.debug(f"Request: {request_path} - Public: {is_public}, AppCheck: {requires_app_check}, HighSec: {is_high_security}")
 
+        # Development mode bypass (check first)
+        if self.development_mode:
+            logger.debug(f"Development mode: Bypassing authentication for {request_path}")
+            # Set mock user context for development
+            environ["HTTP_X_USER_ID"] = "dev-user-123"
+            environ["HTTP_X_USER_EMAIL"] = "dev@example.com"
+            environ["HTTP_X_AUTH_VERIFIED"] = "true"
+            environ["HTTP_X_APP_CHECK_VERIFIED"] = "true"
+            return self.app(environ, start_response)
+
         # 1. App Check Verification (if required)
         if requires_app_check or is_high_security:
-            app_check_result = self._verify_app_check(environ)
-            if not app_check_result and not self.debug_mode:
-                return self._app_check_failed_response(start_response)
-            
-            # Add App Check context to request
-            environ["HTTP_X_APP_CHECK_VERIFIED"] = str(app_check_result)
+            if self.development_mode:
+                # In development mode, bypass App Check for all endpoints
+                logger.debug(f"Development mode: Bypassing App Check for {request_path}")
+                environ["HTTP_X_APP_CHECK_VERIFIED"] = "true"
+            else:
+                app_check_result = self._verify_app_check(environ)
+                if not app_check_result and not self.debug_mode:
+                    return self._app_check_failed_response(start_response)
+                
+                # Add App Check context to request
+                environ["HTTP_X_APP_CHECK_VERIFIED"] = str(app_check_result)
 
         # 2. Authentication Verification (if not public)
         if not is_public:
@@ -244,11 +260,12 @@ class EnhancedAuthMiddleware:
 
     def _app_check_failed_response(self, start_response):
         """Return App Check verification failed response"""
-        response_body = jsonify({
+        import json
+        response_body = json.dumps({
             "error": "App Check Verification Failed",
             "message": "Request must come from a verified application",
             "code": "APP_CHECK_REQUIRED"
-        }).get_data(as_text=True)
+        })
         
         status = '401 Unauthorized'
         headers = [
@@ -261,11 +278,12 @@ class EnhancedAuthMiddleware:
 
     def _unauthorized_response(self, start_response):
         """Return 401 Unauthorized response"""
-        response_body = jsonify({
+        import json
+        response_body = json.dumps({
             "error": "Unauthorized", 
             "message": "Valid authentication token required",
             "code": "AUTH_REQUIRED"
-        }).get_data(as_text=True)
+        })
         
         status = '401 Unauthorized'
         headers = [
@@ -306,6 +324,11 @@ def require_auth_and_app_check(f):
     """
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        # Development mode bypass
+        if os.getenv('FLASK_ENV') == 'development':
+            logger.debug("Development mode: Bypassing auth and app check for high security endpoint")
+            return f(*args, **kwargs)
+
         # 1. Verify user authentication
         user = get_current_user()
         if not user:

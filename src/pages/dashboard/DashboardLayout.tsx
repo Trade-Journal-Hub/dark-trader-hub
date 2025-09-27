@@ -11,7 +11,8 @@ import {
   User,
   Crown,
   LogOut,
-  ChevronDown
+  ChevronDown,
+  Code
 } from "lucide-react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import logo from "@/assets/logo.png";
@@ -174,8 +175,6 @@ export default function DashboardLayout() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          
-          <ThemeToggle />
         </div>
       </header>
 
@@ -252,6 +251,43 @@ export default function DashboardLayout() {
                 })}
               </div>
             </div>
+            
+            {/* Premium Upgrade Section - Bottom of Sidebar */}
+            {!isPremium && (
+              <div className={cn(
+                "mt-auto transition-all duration-300 ease-in-out",
+                sidebarCollapsed ? "lg:opacity-0 lg:h-0 lg:py-0" : "opacity-100 h-auto"
+              )}>
+                <div className="border-t border-border/50 mx-4 my-3" />
+                <div className="px-4 py-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Crown className="h-4 w-4 text-yellow-600" />
+                      <span className="text-xs font-medium text-muted-foreground">
+                        Unlock Premium
+                      </span>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white border-0 h-7 px-2 text-xs"
+                      onClick={() => navigate('/pricing')}
+                    >
+                      <Crown className="w-3 h-3 mr-1" />
+                      Upgrade
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Theme Toggle Section - Bottom of Sidebar */}
+            <div className={cn(
+              "mt-auto transition-all duration-300 ease-in-out",
+              sidebarCollapsed ? "lg:opacity-0 lg:h-0 lg:py-0" : "opacity-100 h-auto"
+            )}>
+              <div className="border-t border-border/50 mx-4 my-3" />
+              <ThemeToggle />
+            </div>
           </div>
         </aside>
 
@@ -268,6 +304,19 @@ export default function DashboardLayout() {
           "flex-1 transition-all duration-300 min-h-screen",
           sidebarCollapsed ? "lg:ml-16" : "lg:ml-64"
         )}>
+          {/* Development Mode Indicator */}
+          {import.meta.env.MODE === 'development' && (
+            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-3 mb-4">
+              <div className="flex items-center">
+                <Code className="w-5 h-5 mr-2" />
+                <div>
+                  <p className="font-semibold">Development Mode</p>
+                  <p className="text-sm">Authentication bypassed - Dashboard access enabled</p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <div className="p-3 md:p-4 lg:p-6">
             <Outlet />
           </div>

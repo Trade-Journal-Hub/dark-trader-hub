@@ -5,7 +5,7 @@ Authentication middleware for Flask application
 import re
 from typing import Any, Dict, Optional
 
-from flask import g, jsonify, request
+from flask import g, jsonify
 
 from app.utils.logger import get_logger
 

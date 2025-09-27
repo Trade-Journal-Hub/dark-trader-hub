@@ -25,7 +25,8 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Trophy,
-  TrendingDown as TrendingDownIcon
+  TrendingDown as TrendingDownIcon,
+  Upload
 } from "lucide-react";
 import { 
   AreaChart, 
@@ -44,7 +45,7 @@ import {
   Legend,
   Line
 } from 'recharts';
-import { useAuth } from '@/services/hooks/useAuth';
+import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { PremiumGate } from '@/components/subscription/PremiumGate';
 import { EmptyState } from '@/components/dashboard/EmptyState';
@@ -137,10 +138,11 @@ const bestWorstSymbols = {
 };
 
 export default function DashboardAnalytics() {
-  const { user } = useAuth();
-  const { isPremium, canAccessAdvancedAnalytics, canAccessAIInsights, canUploadFiles } = useSubscription();
-  const [timeRange, setTimeRange] = useState("30d");
-  const [showUpload, setShowUpload] = useState(false);
+  try {
+    const { user } = useAuth();
+    const { isPremium, canAccessAdvancedAnalytics, canAccessAIInsights, canUploadFiles } = useSubscription();
+    const [timeRange, setTimeRange] = useState("30d");
+    const [showUpload, setShowUpload] = useState(false);
 
   // Real data from API
   const { 
@@ -188,6 +190,28 @@ export default function DashboardAnalytics() {
   const hasData = files && files.length > 0;
   const isLoading = dashboardLoading || overviewLoading || performanceLoading || riskLoading || advancedLoading || filesLoading;
   const hasError = dashboardError || overviewError || performanceError || riskError || advancedError || filesError;
+  
+  // In development mode, ignore errors and show sample data
+  const isDevelopment = import.meta.env.MODE === 'development';
+  const shouldShowError = hasError && !hasData && !isDevelopment;
+  
+  // Check if user has uploaded files
+  const hasUploadedFiles = files && files.length > 0;
+  
+  // Helper function to get value based on user's file upload status
+  const getDisplayValue = (value: any, fallback: any = "-") => {
+    if (hasUploadedFiles) {
+      return value;
+    }
+    return fallback;
+  };
+  
+  // Provide fallback data based on file upload status
+  const fallbackData = {
+    market_sentiment: { current: hasUploadedFiles ? 'Bullish' : '-', strength: hasUploadedFiles ? 72 : 0 },
+    risk_metrics: { sharpe_ratio: hasUploadedFiles ? 1.8 : '-', max_drawdown: hasUploadedFiles ? -5.2 : '-' },
+    performance: { total_return: hasUploadedFiles ? 24.5 : '-', win_rate: hasUploadedFiles ? 68.3 : '-' }
+  };
 
   // Refresh data when component mounts or time range changes
   useEffect(() => {
@@ -243,8 +267,8 @@ export default function DashboardAnalytics() {
     </Alert>
   );
 
-  // If loading, show skeleton
-  if (isLoading && !hasData) {
+  // If loading, show skeleton (except in development mode)
+  if (isLoading && !hasData && !isDevelopment) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
@@ -260,8 +284,8 @@ export default function DashboardAnalytics() {
     );
   }
 
-  // If error, show error alert
-  if (hasError && !hasData) {
+  // If error, show error alert (except in development mode)
+  if (shouldShowError) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
@@ -287,8 +311,8 @@ export default function DashboardAnalytics() {
     );
   }
 
-  // If user doesn't have data, show empty state
-  if (!hasData) {
+  // If user doesn't have data, show empty state (except in development mode)
+  if (!hasData && !isDevelopment) {
     return (
       <div className="space-y-6">
         {/* Header */}
@@ -349,6 +373,19 @@ export default function DashboardAnalytics() {
   // Show actual analytics data for users with uploaded files
   return (
     <div className="space-y-6">
+      {/* Development Mode Indicator */}
+      {isDevelopment && (
+        <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-3 mb-4">
+          <div className="flex items-center">
+            <BarChart3 className="w-5 h-5 mr-2" />
+            <div>
+              <p className="font-semibold">Development Mode - Sample Analytics Data</p>
+              <p className="text-sm">Showing mock data for testing dashboard features</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Header */}
       <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
         <div>
@@ -382,6 +419,17 @@ export default function DashboardAnalytics() {
             <Download className="w-4 h-4 mr-2" />
             Export
           </Button>
+          {/* Upload button for development mode */}
+          {import.meta.env.MODE === 'development' && (
+            <Button size="sm" onClick={() => setShowUpload(true)}>
+              <Upload className="w-4 h-4 mr-2" />
+              Upload Data
+            </Button>
+          )}
+          {/* Debug: Show environment mode */}
+          <div className="text-xs text-muted-foreground">
+            Mode: {import.meta.env.MODE}
+          </div>
         </div>
       </div>
 
@@ -399,16 +447,16 @@ export default function DashboardAnalytics() {
             ) : (
               <>
                 <div className="text-lg md:text-2xl font-bold text-success">
-                  {advancedData?.market_sentiment?.current || 'Bullish'}
+                  {isDevelopment ? fallbackData.market_sentiment.current : (advancedData?.market_sentiment?.current || 'Bullish')}
                 </div>
                 <div className="flex items-center text-xs text-muted-foreground">
                   <div className="w-full bg-muted rounded-full h-1.5 md:h-2 mr-2">
                     <div 
                       className="bg-success h-1.5 md:h-2 rounded-full transition-all duration-300" 
-                      style={{ width: `${advancedData?.market_sentiment?.strength || 72}%` }}
+                      style={{ width: `${isDevelopment ? fallbackData.market_sentiment.strength : (advancedData?.market_sentiment?.strength || 72)}%` }}
                     />
                   </div>
-                  <span className="text-xs font-medium">{advancedData?.market_sentiment?.strength || 72}%</span>
+                  <span className="text-xs font-medium">{isDevelopment ? fallbackData.market_sentiment.strength : (advancedData?.market_sentiment?.strength || 72)}%</span>
                 </div>
               </>
             )}
@@ -431,7 +479,7 @@ export default function DashboardAnalytics() {
             ) : (
               <>
                 <div className={`text-lg md:text-2xl font-bold ${(overviewData?.summary?.daily_pnl || 0) >= 0 ? 'text-success' : 'text-destructive'}`}>
-                  ${Math.abs(overviewData?.summary?.daily_pnl || 1240).toLocaleString()}
+                  ₹{Math.abs(overviewData?.summary?.daily_pnl || 1240).toLocaleString()}
                 </div>
                 <div className={`flex items-center text-xs ${(overviewData?.summary?.daily_pnl || 0) >= 0 ? 'text-success' : 'text-destructive'}`}>
                   {(overviewData?.summary?.daily_pnl || 0) >= 0 ? <TrendingUp className="w-3 h-3 mr-1 flex-shrink-0" /> : <TrendingDown className="w-3 h-3 mr-1 flex-shrink-0" />}
@@ -459,8 +507,7 @@ export default function DashboardAnalytics() {
                 <div className="flex items-center text-xs text-success">
                   <TrendingUp className="w-3 h-3 mr-1 flex-shrink-0" />
                   <span className="truncate">
-                    ${Math.abs(advancedData?.symbol_performance?.best?.pnl || 2340).toLocaleString()} 
-                    (+{advancedData?.symbol_performance?.best?.change || 12.5}%)
+                    {getDisplayValue(`₹${Math.abs(advancedData?.symbol_performance?.best?.pnl || 2340).toLocaleString()} (+${advancedData?.symbol_performance?.best?.change || 12.5}%)`, "-")}
                   </span>
                 </div>
               </>
@@ -485,8 +532,7 @@ export default function DashboardAnalytics() {
                 <div className="flex items-center text-xs text-destructive">
                   <TrendingDown className="w-3 h-3 mr-1 flex-shrink-0" />
                   <span className="truncate">
-                    ${Math.abs(advancedData?.symbol_performance?.worst?.pnl || 280).toLocaleString()} 
-                    ({advancedData?.symbol_performance?.worst?.change || -8.4}%)
+                    {getDisplayValue(`₹${Math.abs(advancedData?.symbol_performance?.worst?.pnl || 280).toLocaleString()} (${advancedData?.symbol_performance?.worst?.change || -8.4}%)`, "-")}
                   </span>
                 </div>
               </>
@@ -509,11 +555,11 @@ export default function DashboardAnalytics() {
             ) : (
               <>
                 <div className={`text-lg md:text-2xl font-bold ${(overviewData?.summary?.total_pnl || 0) >= 0 ? 'text-primary' : 'text-destructive'}`}>
-                  ${Math.abs(overviewData?.summary?.total_pnl || 18904).toLocaleString()}
+                  {getDisplayValue(`₹${Math.abs(overviewData?.summary?.total_pnl || 18904).toLocaleString()}`, "-")}
                 </div>
                 <div className={`flex items-center text-xs ${(overviewData?.summary?.total_pnl || 0) >= 0 ? 'text-success' : 'text-destructive'}`}>
                   {(overviewData?.summary?.total_pnl || 0) >= 0 ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
-                  {overviewData?.summary?.pnl_change || '+12.5%'} from last month
+                  {getDisplayValue(overviewData?.summary?.pnl_change || '+12.5%', "-")} from last month
                 </div>
               </>
             )}
@@ -532,11 +578,11 @@ export default function DashboardAnalytics() {
             ) : (
               <>
                 <div className="text-lg md:text-2xl font-bold">
-                  {(overviewData?.summary?.win_rate || 72.5).toFixed(1)}%
+                  {getDisplayValue(`${(overviewData?.summary?.win_rate || 72.5).toFixed(1)}%`, "-")}
                 </div>
                 <div className="flex items-center text-xs text-success">
                   <TrendingUp className="w-3 h-3 mr-1" />
-                  {overviewData?.summary?.win_rate_change || '+3.8%'} from last month
+                  {getDisplayValue(overviewData?.summary?.win_rate_change || '+3.8%', "-")} from last month
                 </div>
               </>
             )}
@@ -578,11 +624,11 @@ export default function DashboardAnalytics() {
             ) : (
               <>
                 <div className="text-lg md:text-2xl font-bold">
-                  {(riskData?.sharpe_ratio || 1.85).toFixed(2)}
+                  {getDisplayValue((riskData?.sharpe_ratio || 1.85).toFixed(2), "-")}
                 </div>
                 <div className="flex items-center text-xs text-success">
                   <TrendingUp className="w-3 h-3 mr-1" />
-                  {(riskData?.sharpe_ratio || 1.85) > 1.5 ? 'Excellent' : (riskData?.sharpe_ratio || 1.85) > 1.0 ? 'Good' : 'Needs improvement'} performance
+                  {getDisplayValue((riskData?.sharpe_ratio || 1.85) > 1.5 ? 'Excellent' : (riskData?.sharpe_ratio || 1.85) > 1.0 ? 'Good' : 'Needs improvement', "-")} performance
                 </div>
               </>
             )}
@@ -677,7 +723,7 @@ export default function DashboardAnalytics() {
                         tickMargin={8}
                       />
                       <Tooltip 
-                        formatter={(value, name) => [`$${value}`, name === 'pnl' ? 'P&L' : name]}
+                        formatter={(value, name) => [`₹${value}`, name === 'pnl' ? 'P&L' : name]}
                         labelStyle={{ color: 'hsl(var(--foreground))' }}
                         contentStyle={{ 
                           backgroundColor: 'hsl(var(--card))', 
@@ -776,7 +822,7 @@ export default function DashboardAnalytics() {
                       </div>
                       <div className="text-right">
                         <div className={`text-lg font-bold ${symbol.pnl >= 0 ? 'text-success' : 'text-destructive'}`}>
-                          ${symbol.pnl.toLocaleString()}
+                          ₹{symbol.pnl.toLocaleString()}
                         </div>
                         <div className={`flex items-center text-sm ${symbol.change >= 0 ? 'text-success' : 'text-destructive'}`}>
                           {symbol.change >= 0 ? (
@@ -805,7 +851,7 @@ export default function DashboardAnalytics() {
                     <XAxis type="number" />
                     <YAxis dataKey="symbol" type="category" width={60} />
                     <Tooltip 
-                      formatter={(value) => [`$${value}`, 'P&L']}
+                      formatter={(value) => [`₹${value}`, 'P&L']}
                       labelStyle={{ color: 'hsl(var(--foreground))' }}
                       contentStyle={{ 
                         backgroundColor: 'hsl(var(--card))', 
@@ -1120,7 +1166,7 @@ export default function DashboardAnalytics() {
                       <YAxis />
                       <Tooltip 
                         formatter={(value, name) => [
-                          name === 'volume' ? `${value} trades` : `$${value}`,
+                          name === 'volume' ? `${value} trades` : `₹${value}`,
                           name === 'volume' ? 'Trade Volume' : 'P&L'
                         ]}
                         labelStyle={{ color: 'hsl(var(--foreground))' }}
@@ -1164,7 +1210,7 @@ export default function DashboardAnalytics() {
                             {advancedData?.time_patterns?.best_hour || '15:00'}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            Avg: ${advancedData?.time_patterns?.best_hour_pnl || 890} P&L
+                            Avg: ₹{advancedData?.time_patterns?.best_hour_pnl || 890} P&L
                           </div>
                         </div>
                         <div className="text-right">
@@ -1184,7 +1230,7 @@ export default function DashboardAnalytics() {
                             {advancedData?.time_patterns?.worst_hour || '13:00'}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            Avg: ${Math.abs(advancedData?.time_patterns?.worst_hour_pnl || -120)} Loss
+                            Avg: ₹{Math.abs(advancedData?.time_patterns?.worst_hour_pnl || -120)} Loss
                           </div>
                         </div>
                         <div className="text-right">
@@ -1236,7 +1282,7 @@ export default function DashboardAnalytics() {
                       <div className="font-medium">Asian Session</div>
                       <div className="text-sm text-muted-foreground mb-2">20:00 - 05:00 GMT</div>
                       <div className="text-2xl font-bold">
-                        ${advancedData?.time_patterns?.session_performance?.asian?.pnl || 1240}
+                        ₹{advancedData?.time_patterns?.session_performance?.asian?.pnl || 1240}
                       </div>
                       <div className="text-sm text-success">
                         {advancedData?.time_patterns?.session_performance?.asian?.winrate || 68}% Win Rate
@@ -1250,7 +1296,7 @@ export default function DashboardAnalytics() {
                       <div className="font-medium">European Session</div>
                       <div className="text-sm text-muted-foreground mb-2">07:00 - 16:00 GMT</div>
                       <div className="text-2xl font-bold text-primary">
-                        ${advancedData?.time_patterns?.session_performance?.european?.pnl || 2180}
+                        ₹{advancedData?.time_patterns?.session_performance?.european?.pnl || 2180}
                       </div>
                       <div className="text-sm text-success">
                         {advancedData?.time_patterns?.session_performance?.european?.winrate || 75}% Win Rate
@@ -1264,7 +1310,7 @@ export default function DashboardAnalytics() {
                       <div className="font-medium">US Session</div>
                       <div className="text-sm text-muted-foreground mb-2">13:00 - 22:00 GMT</div>
                       <div className="text-2xl font-bold">
-                        ${advancedData?.time_patterns?.session_performance?.us?.pnl || 1890}
+                        ₹{advancedData?.time_patterns?.session_performance?.us?.pnl || 1890}
                       </div>
                       <div className="text-sm text-success">
                         {advancedData?.time_patterns?.session_performance?.us?.winrate || 72}% Win Rate
@@ -1357,4 +1403,25 @@ export default function DashboardAnalytics() {
       </Tabs>
     </div>
   );
+  } catch (error) {
+    console.error('DashboardAnalytics error:', error);
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2 md:gap-3">
+            <div className="p-1.5 md:p-2 rounded-lg md:rounded-xl bg-gradient-primary">
+              <BarChart3 className="w-4 h-4 md:w-6 md:h-6 text-primary-foreground" />
+            </div>
+            <span className="leading-tight">Advanced Analytics</span>
+          </h1>
+        </div>
+        <Alert className="border-red-200 bg-red-50">
+          <AlertCircle className="h-4 w-4 text-red-600" />
+          <AlertDescription className="text-red-800 font-medium">
+            An unexpected error occurred while loading analytics. Please try refreshing the page.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 }

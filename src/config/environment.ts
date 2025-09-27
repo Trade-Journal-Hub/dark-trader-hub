@@ -57,7 +57,7 @@ function getBooleanEnvVar(key: string, fallback: boolean = false): boolean {
  */
 export const envConfig: EnvironmentConfig = {
   // API Configuration
-  apiUrl: getEnvVar('VITE_API_URL', 'http://localhost:8000/api'),
+  apiUrl: getEnvVar('VITE_API_URL', 'http://localhost:8000'),
   
   // Firebase Configuration
   firebase: {

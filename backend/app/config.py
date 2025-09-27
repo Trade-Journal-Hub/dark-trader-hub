@@ -78,8 +78,8 @@ class Config:
         os.getenv("JWT_REFRESH_TOKEN_EXPIRES", "2592000")
     )  # 30 days
 
-    # Database configuration
-    DATABASE_URL = os.getenv("DATABASE_URL")
+    # Database configuration (using Firebase)
+    # DATABASE_URL = os.getenv("DATABASE_URL")  # Not needed for Firebase
 
     @staticmethod
     def validate_config() -> List[str]:

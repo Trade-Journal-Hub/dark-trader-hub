@@ -13,7 +13,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 const Index = lazy(() => import("./pages/Index"));
 const Features = lazy(() => import("./pages/Features"));
 const Pricing = lazy(() => import("./pages/Pricing"));
+const Checkout = lazy(() => import("./pages/Checkout"));
 const SupportedBrokers = lazy(() => import("./pages/SupportedBrokers"));
+const BrokersComingSoon = lazy(() => import("./pages/BrokersComingSoon"));
 const ContactUs = lazy(() => import("./pages/ContactUs"));
 // Removed ScrollStackTest - integrated into home page
 
@@ -25,7 +27,7 @@ const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
 
 // Dashboard pages (lazy loaded for better initial load)
 const DashboardLayout = lazy(() => import("./pages/dashboard/DashboardLayout"));
-const DashboardOverview = lazy(() => import("./pages/dashboard/DashboardOverview"));
+const DashboardOverview = lazy(() => import("./pages/dashboard/DashboardOverviewModern"));
 const DashboardTimeMetrics = lazy(() => import("./pages/dashboard/DashboardTimeMetrics"));
 const DashboardAnalytics = lazy(() => import("./pages/dashboard/DashboardAnalytics"));
 const DashboardCalendar = lazy(() => import("./pages/dashboard/DashboardCalendar"));
@@ -64,7 +66,9 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/features" element={<Features />} />
                 <Route path="/pricing" element={<Pricing />} />
-                <Route path="/brokers" element={<SupportedBrokers />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/brokers" element={<BrokersComingSoon />} />
+                <Route path="/brokers-old" element={<SupportedBrokers />} />
                 <Route path="/contact" element={<ContactUs />} />
                 {/* ScrollStackTest removed - integrated into home page */}
                 

@@ -12,6 +12,8 @@ export interface AuthContextType {
   register: (email: string, password: string, displayName?: string) => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  isOnTrial?: boolean;
+  trialStatus?: string;
 }
 
 export interface LoginFormData {

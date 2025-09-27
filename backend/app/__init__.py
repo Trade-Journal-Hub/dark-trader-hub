@@ -8,7 +8,7 @@ from flask import Flask
 from flask_cors import CORS
 
 from app.config import Config
-from app.extensions import auth, db, storage
+from app.extensions import auth, storage
 from app.middleware.enhanced_auth_middleware import EnhancedAuthMiddleware
 from app.routes import api_bp
 from app.routes.analytics_routes import analytics_bp
@@ -25,7 +25,6 @@ def create_app(config_class=Config):
     setup_logging(app)
 
     # Initialize extensions
-    db.init_app(app)
     auth.init_app(app)
     storage.init_app(app)
 

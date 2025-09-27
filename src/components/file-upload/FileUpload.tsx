@@ -8,13 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
-import { useAuth } from '@/services/hooks/useAuth';
+import { useAuth } from '@/contexts/AuthContext';
 import { useFileUpload } from '@/hooks/useTradingApi';
-import { useDataFlow } from '@/hooks/useDataFlow';
 import { useToast } from '@/components/ui/use-toast';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { PremiumGate } from '@/components/subscription/PremiumGate';
-import { DataFlowProgress } from '@/components/data-flow/DataFlowProgress';
+import { TrialService } from '@/services/trialService';
 
 interface FileUploadProps {
   onUploadComplete?: (fileId: string) => void;
@@ -28,7 +27,7 @@ interface UploadedFile {
   status: 'pending' | 'uploading' | 'processing' | 'completed' | 'failed';
   progress: number;
   error?: string;
-  result?: any;
+  result?: unknown;
 }
 
 export const FileUpload: React.FC<FileUploadProps> = ({
@@ -39,15 +38,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   const { toast } = useToast();
   const { canUploadFiles } = useSubscription();
   const { uploading, progress, error, uploadFile } = useFileUpload();
-  const { 
-    processFileUpload, 
-    isInProgress, 
-    isComplete, 
-    hasError, 
-    reset 
-  } = useDataFlow();
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const [showProgress, setShowProgress] = useState(false);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (!user) {
@@ -62,10 +53,23 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     if (!canUploadFiles) {
       toast({
         title: "Upgrade Required",
-        description: "Please upgrade your plan to upload files.",
+        description: "Please upgrade to PRO or start a free trial to upload files.",
         variant: "destructive",
       });
       return;
+    }
+
+    // Check trial limits if on trial
+    const trialData = TrialService.getTrialData();
+    if (trialData) {
+      if (!TrialService.canUploadFile()) {
+        toast({
+          title: "Trial Limit Reached",
+          description: "You've reached the maximum number of file uploads (3) for your trial period.",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     if (acceptedFiles.length === 0) {
@@ -85,33 +89,52 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       id: fileId,
       name: file.name,
       size: file.size,
-      status: 'uploading',
+      status: 'pending',
       progress: 0,
     };
 
     setUploadedFiles(prev => [...prev, newFile]);
-    setShowProgress(true);
+        // Show progress
 
     try {
-      // Use data flow service for complete processing
-      const analyticsData = await processFileUpload(file);
-
-      setUploadedFiles(prev =>
-        prev.map(f => f.id === fileId ? { 
-          ...f, 
-          status: 'completed', 
-          progress: 100,
-          result: analyticsData
-        } : f)
-      );
-
-      toast({
-        title: "Upload Complete!",
-        description: `File ${file.name} has been processed and analyzed successfully.`,
-        variant: "default",
+      // Use direct upload API
+      const response = await uploadFile(file, {
+        onProgress: (progressData) => {
+          setUploadedFiles(prev =>
+            prev.map(f => f.id === fileId ? { 
+              ...f, 
+              status: 'uploading', 
+              progress: progressData.percentage 
+            } : f)
+          );
+        }
       });
 
-      onUploadComplete?.(fileId);
+      if (response.success) {
+        setUploadedFiles(prev =>
+          prev.map(f => f.id === fileId ? { 
+            ...f, 
+            status: 'completed', 
+            progress: 100,
+            result: response.data
+          } : f)
+        );
+
+        // Record trial usage if on trial
+        if (trialData) {
+          TrialService.recordFileUpload();
+        }
+
+        toast({
+          title: "Upload Complete!",
+          description: `File ${file.name} has been processed successfully.`,
+          variant: "default",
+        });
+
+        onUploadComplete?.(fileId);
+      } else {
+        throw new Error(response.error || 'Upload failed');
+      }
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Upload failed';
@@ -132,7 +155,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
       onUploadError?.(errorMessage);
     }
-  }, [user, canUploadFiles, processFileUpload, toast, onUploadComplete, onUploadError]);
+  }, [user, canUploadFiles, uploadFile, toast, onUploadComplete, onUploadError]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -150,21 +173,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     setUploadedFiles(prev => prev.filter(f => f.id !== fileId));
   };
 
-  const getFileIcon = (status: UploadedFile['status']) => {
-    switch (status) {
-      case 'uploading':
-      case 'processing':
-        return <Loader2 className="h-5 w-5 animate-spin text-primary" />;
-      case 'completed':
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
-      case 'failed':
-        return <AlertCircle className="h-5 w-5 text-red-500" />;
-      default:
-        return <File className="h-5 w-5 text-muted-foreground" />;
-    }
-  };
-
-  const formatFileSize = (bytes: number) => {
+  const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
@@ -172,21 +181,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  return (
-    <PremiumGate 
-      feature="File Upload" 
-      requiredPlan="professional"
-    >
-      <div className="space-y-4">
-        {/* Data Flow Progress */}
-        {showProgress && (isInProgress || isComplete || hasError) && (
-          <DataFlowProgress 
-            onClose={() => setShowProgress(false)}
-            showCloseButton={isComplete || hasError}
-          />
-        )}
-
-        <Card className="border-2 border-dashed hover:border-primary transition-colors">
+  const uploadContent = (
+    <div className="space-y-4">
+      <Card className="border-2 border-dashed hover:border-primary transition-colors">
         <CardHeader>
           <CardTitle className="flex items-center">
             <Upload className="mr-2 h-5 w-5" />
@@ -210,82 +207,88 @@ export const FileUpload: React.FC<FileUploadProps> = ({
               <p className="text-lg text-primary">Drop the file here...</p>
             ) : (
               <p className="text-lg text-muted-foreground">
-                Drag 'n' drop your trading file here, or{' '}
-                <span className="text-primary underline">click to select</span>
+                Drag and drop your file here, or click to select
               </p>
             )}
             <p className="text-sm text-muted-foreground mt-2">
-              (Only .csv, .xls, .xlsx files, max 10MB)
+              Supports CSV, XLS, XLSX files up to 10MB
             </p>
           </div>
 
+          {/* Upload Progress */}
+          {uploading && (
+            <div className="mt-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium">Uploading...</span>
+                <span className="text-sm text-muted-foreground">{progress}%</span>
+              </div>
+              <Progress value={progress} className="w-full" />
+            </div>
+          )}
+
+          {/* Error Display */}
           {error && (
             <Alert className="mt-4" variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                {error.message || 'An error occurred during upload'}
+                {typeof error === 'object' && error !== null 
+                  ? (error as unknown as Record<string, unknown>).message as string || 'An error occurred'
+                  : String(error)
+                }
               </AlertDescription>
             </Alert>
           )}
 
+          {/* Uploaded Files */}
           {uploadedFiles.length > 0 && (
             <div className="mt-4 space-y-2">
+              <h4 className="text-sm font-medium">Uploaded Files</h4>
               {uploadedFiles.map((file) => (
-                <div
-                  key={file.id}
-                  className="flex items-center space-x-3 p-3 border rounded-md bg-muted/50"
-                >
-                  {getFileIcon(file.status)}
-                  
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{file.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatFileSize(file.size)}
-                    </p>
-                    
-                    {file.status === 'uploading' && (
-                      <div className="mt-1">
-                        <Progress value={file.progress} className="h-2" />
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {file.progress}% uploaded
-                        </p>
-                      </div>
-                    )}
-                    
-                    {file.status === 'processing' && (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Processing file...
+                <div key={file.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <File className="h-4 w-4 text-muted-foreground" />
+                    <div>
+                      <p className="text-sm font-medium">{file.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatFileSize(file.size)} • {file.status}
                       </p>
-                    )}
-                    
-                    {file.status === 'completed' && (
-                      <p className="text-xs text-green-600 mt-1">
-                        Upload complete
-                      </p>
-                    )}
-                    
-                    {file.status === 'failed' && (
-                      <p className="text-xs text-red-600 mt-1">
-                        {file.error || 'Upload failed'}
-                      </p>
-                    )}
+                    </div>
                   </div>
-                  
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeFile(file.id)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center space-x-2">
+                    {file.status === 'completed' && (
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                    )}
+                    {file.status === 'failed' && (
+                      <AlertCircle className="h-4 w-4 text-red-500" />
+                    )}
+                    {file.status === 'uploading' && (
+                      <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeFile(file.id)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
           )}
         </CardContent>
       </Card>
-      </div>
+    </div>
+  );
+
+  // Show upload interface for PRO members or trial users
+  return (
+    <PremiumGate 
+      feature="File Upload" 
+      requiredPlan="professional"
+    >
+      {uploadContent}
     </PremiumGate>
   );
 };

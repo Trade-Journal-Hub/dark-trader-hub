@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Marquee } from "@/components/ui/marquee";
 import { LazyImage } from "@/components/LazyImage";
 import { memo } from 'react';
-import { Star, TrendingUp, DollarSign, Activity } from 'lucide-react';
+// import { Star, TrendingUp, DollarSign, Activity } from 'lucide-react'; // Unused imports
 
 // Trading-specific testimonials with real metrics
 const tradingTestimonials = [
@@ -112,9 +112,9 @@ const ReviewCard = memo(({
   username,
   role,
   comment,
-  pnl,
-  trades,
-  winRate,
+  pnl: _pnl,
+  trades: _trades,
+  winRate: _winRate,
   verified
 }: {
   img: string;

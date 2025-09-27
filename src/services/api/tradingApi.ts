@@ -28,8 +28,9 @@ export class TradingApiClient {
   private client: AxiosInstance;
   private baseURL: string;
 
-  constructor(baseURL: string = import.meta.env.VITE_API_URL || 'http://localhost:5000') {
-    this.baseURL = baseURL;
+  constructor(baseURL: string = import.meta.env.VITE_API_URL || 'http://localhost:8000') {
+    // Ensure baseURL doesn't end with /api to avoid double /api in requests
+    this.baseURL = baseURL.replace(/\/api$/, '');
     this.client = this.createAxiosInstance();
   }
 

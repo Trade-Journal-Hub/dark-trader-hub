@@ -2,7 +2,8 @@ import Navigation from '@/components/Navigation';
 import { StickyFooter } from '@/components/ui/sticky-footer';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Check, ArrowRight, Zap, Shield, Clock } from 'lucide-react';
+import { Check, ArrowRight, Zap, Shield, Clock, Sparkles, Rocket, Star } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const SupportedBrokers = () => {
   const brokers = [

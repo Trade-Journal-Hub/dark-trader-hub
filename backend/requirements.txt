@@ -9,8 +9,8 @@ firebase-admin==6.4.0
 # Google Cloud Storage
 google-cloud-storage==2.10.0
 
-# Database
-flask-sqlalchemy==3.1.1
+# Database (using Firebase instead of SQLAlchemy)
+# flask-sqlalchemy==3.1.1  # Removed - using Firebase
 
 # Data processing
 pandas==2.1.4

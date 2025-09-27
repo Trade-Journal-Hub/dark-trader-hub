@@ -120,7 +120,7 @@ export default function DashboardSettings() {
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium">Currency Display</label>
-                <div className="p-3 bg-muted rounded-lg">USD ($)</div>
+                <div className="p-3 bg-muted rounded-lg">INR (₹)</div>
               </div>
             </div>
           </CardContent>
@@ -296,7 +296,7 @@ export default function DashboardSettings() {
             </div>
             <div>
               <h4 className="font-medium">Amount</h4>
-              <p className="text-sm text-muted-foreground">$29.99/month</p>
+              <p className="text-sm text-muted-foreground">₹2,499/month</p>
             </div>
           </div>
           <Separator />

@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // Removed social providers as requested
 
@@ -48,6 +48,7 @@ const EnhancedAuthBoard = memo(() => {
   
   const { login, register } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Convert technical errors to user-friendly messages
   const getUserFriendlyError = (error: any): string => {
@@ -88,9 +89,17 @@ const EnhancedAuthBoard = memo(() => {
       if (isSignUp) {
         await register(formData.email, formData.password, formData.name || '');
         setSuccess("Account created successfully! Welcome to TradeJournal Pro.");
+        // Navigate to dashboard after successful registration
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1500);
       } else {
         await login(formData.email, formData.password);
         setSuccess("Welcome back! You're now signed in.");
+        // Navigate to dashboard after successful login
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1500);
       }
     } catch (error) {
       const friendlyError = getUserFriendlyError(error);

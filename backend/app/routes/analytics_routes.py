@@ -29,7 +29,7 @@ def get_overview():
         JSON response with overview analytics
     """
     try:
-        user_id = request.user_id
+        user_id = request.environ.get("HTTP_X_USER_ID")
         if not user_id:
             return (
                 jsonify({"success": False, "error": "User authentication required"}),
@@ -91,7 +91,7 @@ def get_performance():
         JSON response with performance analytics
     """
     try:
-        user_id = request.user_id
+        user_id = request.environ.get("HTTP_X_USER_ID")
         if not user_id:
             return (
                 jsonify({"success": False, "error": "User authentication required"}),
@@ -154,7 +154,7 @@ def get_risk_analysis():
         JSON response with risk analysis
     """
     try:
-        user_id = request.user_id
+        user_id = request.environ.get("HTTP_X_USER_ID")
         if not user_id:
             return (
                 jsonify({"success": False, "error": "User authentication required"}),
@@ -213,7 +213,7 @@ def get_symbol_analytics():
         JSON response with symbol-specific analytics
     """
     try:
-        user_id = request.user_id
+        user_id = request.environ.get("HTTP_X_USER_ID")
         if not user_id:
             return (
                 jsonify({"success": False, "error": "User authentication required"}),
@@ -274,7 +274,7 @@ def get_dashboard_data():
         JSON response with complete dashboard data
     """
     try:
-        user_id = request.user_id
+        user_id = request.environ.get("HTTP_X_USER_ID")
         if not user_id:
             return (
                 jsonify({"success": False, "error": "User authentication required"}),
@@ -333,7 +333,7 @@ def get_advanced_analytics():
         JSON response with advanced analytics
     """
     try:
-        user_id = request.user_id
+        user_id = request.environ.get("HTTP_X_USER_ID")
         if not user_id:
             return (
                 jsonify({"success": False, "error": "User authentication required"}),
@@ -396,7 +396,7 @@ def export_analytics():
         File download or JSON response
     """
     try:
-        user_id = request.user_id
+        user_id = request.environ.get("HTTP_X_USER_ID")
         if not user_id:
             return (
                 jsonify({"success": False, "error": "User authentication required"}),

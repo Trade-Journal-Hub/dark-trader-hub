@@ -45,16 +45,19 @@ export function ThemeToggle() {
   }, []);
 
   return (
-    <div className="flex items-center space-x-3 p-4 border-t border-border">
-      <div className="flex items-center space-x-2">
-        <Sun className="h-4 w-4 text-muted-foreground" />
-        <Label htmlFor="theme-toggle" className="text-sm font-medium cursor-pointer">
-          {isDark ? 'Dark Mode' : 'Light Mode'}
-        </Label>
+    <div className="px-4 py-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <Sun className="h-4 w-4 text-muted-foreground" />
+          <Label htmlFor="theme-toggle" className="text-xs font-medium text-muted-foreground cursor-pointer">
+            {isDark ? 'Dark Mode' : 'Light Mode'}
+          </Label>
+        </div>
         <Switch
           id="theme-toggle"
           checked={isDark}
           onCheckedChange={toggleTheme}
+          className="data-[state=checked]:bg-primary"
         />
         <Moon className="h-4 w-4 text-muted-foreground" />
       </div>

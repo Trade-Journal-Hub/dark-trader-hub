@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import Navigation from '@/components/Navigation';
 import { StickyFooter } from '@/components/ui/sticky-footer';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Star, Zap, Crown } from 'lucide-react';
+import { Check, Zap, Plus, Minus } from 'lucide-react';
 import { SEOHead, SEOConfigs } from '@/components/SEOHead';
 import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 import { motion, AnimatePresence } from 'framer-motion';
+import { TrialTermsModal } from '@/components/subscription/TrialTermsModal';
+import { TrialService } from '@/services/trialService';
+import { useNavigate } from 'react-router-dom';
 
 const Pricing = () => {
   return (
@@ -20,130 +22,155 @@ const Pricing = () => {
 };
 
 const PricingContent = () => {
+  const navigate = useNavigate();
   const [isYearly, setIsYearly] = useState(false);
+  const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null);
+  const [showTrialModal, setShowTrialModal] = useState(false);
+
+  const handleStartTrial = () => {
+    setShowTrialModal(true);
+  };
+
+  const handleAcceptTrial = () => {
+    // Start the trial using TrialService
+    TrialService.startTrial();
+    setShowTrialModal(false);
+    // Redirect to dashboard
+    window.location.href = '/dashboard';
+  };
+
+  const handleCloseTrialModal = () => {
+    setShowTrialModal(false);
+  };
+
+  const handleUpgradeToPro = () => {
+    navigate('/checkout');
+  };
 
   const plans = [
+    // {
+    //   name: "Basic",
+    //   price: "₹399",
+    //   originalPrice: "₹699",
+    //   period: "/month",
+    //   description: "Perfect for individual traders starting their journey",
+    //   features: [
+    //     // "Up to 100 trades per month",
+    //     "Basic analytics & reports",
+    //     "Trade journal with notes",
+    //     // "Mobile app access",
+    //     "Email support",
+    //     "Basic tax reporting"
+    //   ],
+    //   icon: <Star className="h-6 w-6" />,
+    //   popular: false,
+    //   savings: "33% OFF"
+    // },
     {
-      name: "Basic",
-      price: "₹999",
-      originalPrice: "₹1,499",
-      period: "/month",
-      description: "Perfect for individual traders starting their journey",
-      features: [
-        "Up to 100 trades per month",
-        "Basic analytics & reports",
-        "Trade journal with notes",
-        "Mobile app access",
-        "Email support",
-        "Basic tax reporting"
-      ],
-      icon: <Star className="h-6 w-6" />,
-      popular: false,
-      savings: "33% OFF"
-    },
-    {
-      name: "Professional",
-      price: "₹1,799",
-      originalPrice: "₹2,999",
+      name: "PRO",
+      price: "₹499",
+      originalPrice: "₹1499",
       period: "/month",
       description: "Advanced features for serious traders",
       features: [
-        "Unlimited trades",
-        "Advanced analytics & AI insights",
+        // "Unlimited trades",
+        // "Advanced analytics & AI insights",
+        "Advanced analytics",
         "Performance tracking",
-        "Risk management tools",
-        "Priority support",
-        "Advanced tax reporting",
+        // "Risk management tools",
+        // "Priority support",
+        "Basic tax reporting",
         "Portfolio optimization",
-        "Custom indicators",
-        "Broker integration"
+        "Custom reports & exports",
+        // "Broker integration"
       ],
       icon: <Zap className="h-6 w-6" />,
-      popular: true,
+      popular: false,
       savings: "40% OFF"
     },
-    {
-      name: "Enterprise",
-      price: "₹3,499",
-      originalPrice: "₹4,999",
-      period: "/month",
-      description: "Complete solution for professional trading firms",
-      features: [
-        "Everything in Professional",
-        "Multi-user accounts",
-        "Team collaboration tools",
-        "Custom branding",
-        "API access",
-        "Dedicated account manager",
-        "Advanced compliance tools",
-        "White-label solution",
-        "24/7 phone support"
-      ],
-      icon: <Crown className="h-6 w-6" />,
-      popular: false,
-      savings: "30% OFF"
-    }
+    // {
+    //   name: "Enterprise",
+    //   price: "₹3,499",
+    //   originalPrice: "₹4,999",
+    //   period: "/month",
+    //   description: "Complete solution for professional trading firms",
+    //   features: [
+    //     "Everything in Professional",
+    //     "Multi-user accounts",
+    //     "Team collaboration tools",
+    //     "Custom branding",
+    //     "API access",
+    //     "Dedicated account manager",
+    //     "Advanced compliance tools",
+    //     "White-label solution",
+    //     "24/7 phone support"
+    //   ],
+    //   icon: <Crown className="h-6 w-6" />,
+    //   popular: false,
+    //   savings: "30% OFF"
+    // }
   ];
 
   const yearlyPlans = [
-    {
-      name: "Basic",
-      price: "₹9,590", // (999 * 12) * 0.8 = 20% discount
-      originalPrice: "₹11,988", // 999 * 12
-      period: "/year",
-      monthlyEquivalent: "₹799/month",
-      savings: "20% OFF",
-      features: [
-        "Up to 100 trades per month",
-        "Basic analytics & reports",
-        "Trade journal with notes",
-        "Mobile app access",
-        "Email support",
-        "Basic tax reporting"
-      ],
-      icon: <Star className="h-6 w-6" />,
-      popular: false
-    },
+    // {
+    //   name: "Basic",
+    //   price: "₹9,590", // (999 * 12) * 0.8 = 20% discount
+    //   originalPrice: "₹11,988", // 999 * 12
+    //   period: "/year",
+    //   monthlyEquivalent: "₹799/month",
+    //   savings: "20% OFF",
+    //   features: [
+    //     "Up to 100 trades per month",
+    //     "Basic analytics & reports",
+    //     "Trade journal with notes",
+    //     "Mobile app access",
+    //     "Email support",
+    //     "Basic tax reporting"
+    //   ],
+    //   icon: <Star className="h-6 w-6" />,
+    //   popular: false
+    // },
     {
       name: "Professional", 
-      price: "₹17,270", // (1799 * 12) * 0.8 = 20% discount
-      originalPrice: "₹21,588", // 1799 * 12
+      price: "₹4799", // (1799 * 12) * 0.8 = 20% discount
+      originalPrice: "₹5999", // 1799 * 12
       period: "/year",
-      monthlyEquivalent: "₹1,439/month",
+      monthlyEquivalent: "₹399/month",
       savings: "20% OFF",
       features: [
-        "Unlimited trades",
-        "Advanced analytics & AI insights",
+        // "Unlimited trades",
+        "Advanced analytics",
         "Performance tracking",
-        "Risk management tools",
-        "Multi-broker integration",
-        "Priority support",
-        "Advanced tax optimization",
+        // "Risk management tools",
+        // "Multi-broker integration",
+        // "Priority support",
+        "Basic tax reporting",
+        "Portfolio optimization",
         "Custom reports & exports"
       ],
       icon: <Zap className="h-6 w-6" />,
-      popular: true
-    },
-    {
-      name: "Enterprise",
-      price: "₹38,390", // (3999 * 12) * 0.8 = 20% discount
-      originalPrice: "₹47,988", // 3999 * 12
-      period: "/year",
-      monthlyEquivalent: "₹3,199/month",
-      savings: "20% OFF",
-      features: [
-        "Everything in Professional",
-        "White-label solutions",
-        "API access & webhooks",
-        "Custom integrations",
-        "Dedicated account manager",
-        "24/7 phone support",
-        "Advanced compliance tools",
-        "Custom training sessions"
-      ],
-      icon: <Crown className="h-6 w-6" />,
       popular: false
-    }
+    },
+    // {
+    //   name: "Enterprise",
+    //   price: "₹38,390", // (3999 * 12) * 0.8 = 20% discount
+    //   originalPrice: "₹47,988", // 3999 * 12
+    //   period: "/year",
+    //   monthlyEquivalent: "₹3,199/month",
+    //   savings: "20% OFF",
+    //   features: [
+    //     "Everything in Professional",
+    //     "White-label solutions",
+    //     "API access & webhooks",
+    //     "Custom integrations",
+    //     "Dedicated account manager",
+    //     "24/7 phone support",
+    //     "Advanced compliance tools",
+    //     "Custom training sessions"
+    //   ],
+    //   icon: <Crown className="h-6 w-6" />,
+    //   popular: false
+    // }
   ];
 
   return (
@@ -200,17 +227,22 @@ const PricingContent = () => {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
-            {(isYearly ? yearlyPlans : plans).map((plan, index) => (
-              <div
-                key={plan.name}
-                className={`relative bg-white/10 backdrop-blur-sm rounded-2xl p-8 border transition-all duration-300 hover:shadow-elegant hover:scale-105 animate-fade-in ${
-                  plan.popular 
-                    ? 'border-cyan-400 shadow-lg shadow-cyan-400/20' 
-                    : 'border-white/20 hover:border-cyan-400/50'
-                }`}
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
+          <div className="flex justify-center mb-16">
+            <div className="w-full max-w-md">
+              {(isYearly ? yearlyPlans : plans).map((plan, index) => (
+                <div
+                  key={plan.name}
+                  className={`relative bg-white/10 backdrop-blur-sm rounded-2xl p-8 border transition-all duration-300 hover:shadow-elegant hover:scale-105 animate-fade-in ${
+                    plan.popular 
+                      ? 'border-cyan-400 shadow-lg shadow-cyan-400/20' 
+                      : 'border-white/20 hover:border-cyan-400/50'
+                  }`}
+                  style={{ 
+                    animationDelay: `${index * 0.1}s`,
+                    boxShadow: '0 0 30px rgba(6, 182, 212, 0.3), 0 0 60px rgba(6, 182, 212, 0.1)',
+                    border: '2px solid rgba(6, 182, 212, 0.3)'
+                  }}
+                >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                     <Badge className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white px-4 py-1">
@@ -302,20 +334,22 @@ const PricingContent = () => {
                 </ul>
 
                 <InteractiveHoverButton 
+                  onClick={plan.name === 'PRO' ? handleUpgradeToPro : handleStartTrial}
                   className={`w-full ${
                     plan.popular 
                       ? 'bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white border-0 shadow-lg' 
                       : 'bg-transparent border-2 border-white/30 text-white hover:bg-white hover:text-black'
                   } py-3 px-6 text-lg font-semibold`}
                 >
-                  {plan.popular ? 'Start Pro Trial' : plan.name === 'Enterprise' ? 'Contact Sales' : 'Start Free Trial'}
+                  {plan.popular ? 'Start Pro Trial' : plan.name === 'Enterprise' ? 'Contact Sales' : 'Start PRO'}
                 </InteractiveHoverButton>
-              </div>
-            ))}
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Money Back Guarantee */}
-          <div className="text-center bg-card rounded-2xl p-8 border border-border">
+          {/* <div className="text-center bg-card rounded-2xl p-8 border border-border">
             <h3 className="text-2xl font-bold mb-4">
               🛡️ 30-Day Money-Back Guarantee
             </h3>
@@ -323,7 +357,7 @@ const PricingContent = () => {
               Not satisfied? Get a full refund within 30 days, no questions asked. 
               We're confident you'll love TradeJournal Pro.
             </p>
-          </div>
+          </div> */}
         </div>
       </section>
 
@@ -333,37 +367,91 @@ const PricingContent = () => {
           <h2 className="text-3xl font-bold text-center mb-12 text-white">
             Frequently Asked 
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
-              Questions
+               Questions
             </span>
           </h2>
           
-          <div className="space-y-6">
+          <div className="space-y-4">
             {[
-              {
-                q: "Can I switch plans anytime?",
-                a: "Absolutely! You can upgrade or downgrade your plan at any time. Changes take effect immediately."
-              },
+              // {
+              //   q: "Can I switch plans anytime?",
+              //   a: "Absolutely! You can upgrade or downgrade your plan at any time. Changes take effect immediately and you'll only be charged the prorated difference.",
+              //   icon: "🔄"
+              // },
               {
                 q: "Do you offer student discounts?",
-                a: "Yes! Students get 50% off any plan. Contact our support team with your student ID for verification."
+                a: "Yes! Students get 50% off any plan. Contact our support team with your student ID for verification. This discount applies to both monthly and yearly plans.",
+                icon: "🎓"
               },
               {
                 q: "What payment methods do you accept?",
-                a: "We accept all major credit cards, UPI, net banking, and digital wallets including Paytm and PhonePe."
+                a: "We accept all major credit cards (Visa, Mastercard, American Express), UPI, net banking, and digital wallets including Paytm, PhonePe, and Google Pay.",
+                icon: "💳"
               },
               {
                 q: "Is my trading data secure?",
-                a: "Yes! We use bank-grade encryption and never store your broker credentials. Your data is 100% secure and private."
+                a: "Yes! We use bank-grade 256-bit encryption and never store your broker credentials. Your data is 100% secure and private. We're SOC 2 compliant and follow strict data protection protocols.",
+                icon: "🔒"
+              },
+              {
+                q: "What happens after my free trial ends?",
+                a: "After your 14-day trial, you'll need to subscribe to continue using premium features. Your data is preserved, and you can export it anytime. No automatic charges during trial.",
+                icon: "⏰"
+              },
+              {
+                q: "Can I cancel my subscription anytime?",
+                a: "Yes! You can cancel your subscription anytime from your account settings. You'll continue to have access until the end of your current billing period.",
+                icon: "❌"
               }
             ].map((faq, index) => (
-              <div 
+              <motion.div 
                 key={index} 
-                className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20 hover:border-cyan-400/50 transition-colors animate-fade-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-xl border border-white/20 hover:border-cyan-400/50 transition-all duration-300 overflow-hidden"
               >
-                <h4 className="font-semibold mb-2 text-white">{faq.q}</h4>
-                <p className="text-gray-300">{faq.a}</p>
-              </div>
+                <button
+                  onClick={() => setExpandedFAQ(expandedFAQ === index ? null : index)}
+                  className="w-full p-6 text-left flex items-center justify-between hover:bg-white/5 transition-colors"
+                >
+                  <div className="flex items-center space-x-4">
+                    {/* <div className="text-2xl">{faq.icon}</div> */}
+                    <h4 className="font-semibold text-white text-lg">
+                      {faq.q}
+                    </h4>
+                  </div>
+                  <motion.div
+                    animate={{ rotate: expandedFAQ === index ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="text-cyan-400"
+                  >
+                    {expandedFAQ === index ? (
+                      <Minus className="h-6 w-6" />
+                    ) : (
+                      <Plus className="h-6 w-6" />
+                    )}
+                  </motion.div>
+                </button>
+                
+                <AnimatePresence>
+                  {expandedFAQ === index && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: 'easeInOut' }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-6 pb-6 pt-0">
+                        <p className="text-gray-300 leading-relaxed">
+                          {faq.a}
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -381,13 +469,33 @@ const PricingContent = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <InteractiveHoverButton className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white border-0 px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl">
-                Start Your Free Trial
+              <InteractiveHoverButton 
+                className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white border-0 px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl"
+                onClick={handleStartTrial}
+              >
+                Start Your 14-Day Free Trial
               </InteractiveHoverButton>
-              
-              <InteractiveHoverButton className="bg-transparent border-2 border-white/30 text-white hover:bg-white hover:text-black px-8 py-4 text-lg font-semibold backdrop-blur-sm">
-                View Live Demo
-              </InteractiveHoverButton>
+            </div>
+            
+            {/* Trial Conditions */}
+            <div className="mt-8 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/20 rounded-xl p-6">
+              <h4 className="text-lg font-semibold text-yellow-400 mb-4 text-center">
+                🎯 Free Trial Conditions
+              </h4>
+              <div className="grid md:grid-cols-3 gap-4 text-sm">
+                <div className="flex items-center justify-center space-x-2 text-gray-300">
+                  <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                  <span>Max 100 rows</span>
+                </div>
+                <div className="flex items-center justify-center space-x-2 text-gray-300">
+                  <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                  <span>Up to 3 file uploads total</span>
+                </div>
+                <div className="flex items-center justify-center space-x-2 text-gray-300">
+                  <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                  <span>Auto-expires in 14 days</span>
+                </div>
+              </div>
             </div>
             
             <div className="mt-6 text-sm text-muted-foreground">
@@ -398,12 +506,19 @@ const PricingContent = () => {
               <span className="mx-4">•</span>
               <span className="inline-flex items-center gap-2">
                 <Check className="w-4 h-4 text-success" />
-                14-day money-back guarantee
+                Full premium features
               </span>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Trial Terms Modal */}
+      <TrialTermsModal
+        isOpen={showTrialModal}
+        onClose={handleCloseTrialModal}
+        onAccept={handleAcceptTrial}
+      />
 
       <StickyFooter />
     </div>
@@ -411,3 +526,4 @@ const PricingContent = () => {
 };
 
 export default Pricing;
+

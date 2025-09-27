@@ -5,14 +5,13 @@ File upload and processing routes
 import os
 import tempfile
 
-from flask import Blueprint, current_app, jsonify, request
+from flask import Blueprint, jsonify, request
 from werkzeug.utils import secure_filename
 
 from app.middleware.enhanced_auth_middleware import high_security, medium_security, get_security_context, log_security_event
 from app.services.file_processing_service import file_processing_service
 from app.services.firebase_service import firebase_service
 from app.utils.logger import get_logger
-from app.utils.validation import validate_file_upload
 
 logger = get_logger(__name__)
 
@@ -50,8 +49,8 @@ def upload_file():
             log_security_event("FILE_UPLOAD_FAILED", {"reason": "no_file_selected"})
             return jsonify({"success": False, "error": "No file selected"}), 400
 
-        # Get user ID from auth token
-        user_id = request.user_id
+        # Get user ID from auth token (set by middleware)
+        user_id = request.environ.get("HTTP_X_USER_ID")
         if not user_id:
             log_security_event("FILE_UPLOAD_FAILED", {"reason": "no_user_id"})
             return (
@@ -260,6 +259,11 @@ def get_file_trades(file_id):
 def store_processed_data(user_id: str, result: dict):
     """Store processed file data in Firestore."""
     try:
+        # Development mode bypass
+        if not firebase_service.db:
+            logger.info("Development mode: Skipping Firestore storage")
+            return
+
         # Create file document
         file_doc = {
             "user_id": user_id,

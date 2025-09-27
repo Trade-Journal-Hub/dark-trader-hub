@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import { useAuth } from '@/services/hooks/useAuth';
 import { firestoreService } from '@/services/firebase/firestore';
+import { TrialService } from '@/services/trialService';
 
 export type SubscriptionPlan = 'basic' | 'professional' | 'enterprise';
 export type SubscriptionStatus = 'active' | 'inactive' | 'cancelled';
@@ -34,8 +35,9 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
   const { user } = useAuth();
 
   const isPremium = subscription?.plan !== 'basic' && subscription?.status === 'active';
-  const canUploadFiles = isPremium;
-  const canAccessAdvancedAnalytics = isPremium;
+  const isOnTrial = TrialService.isOnTrial();
+  const canUploadFiles = isPremium || isOnTrial;
+  const canAccessAdvancedAnalytics = isPremium || isOnTrial;
   const canAccessAIInsights = subscription?.plan === 'enterprise' && subscription?.status === 'active';
 
   const loadSubscription = useCallback(async () => {

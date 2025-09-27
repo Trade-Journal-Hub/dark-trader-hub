@@ -34,6 +34,16 @@ class FileProcessingService:
             "duration",
             "broker",
         ]
+        # Nifty format mapping
+        self.nifty_format_mapping = {
+            "Time": "datetime",
+            "Type": "side", 
+            "Instrument": "symbol",
+            "Product": "product",
+            "Qty.": "quantity",
+            "Avg. price": "price",
+            "Status": "status"
+        }
 
     def process_file(self, file_path: str, user_id: str) -> Dict[str, Any]:
         """
@@ -142,30 +152,37 @@ class FileProcessingService:
         # Remove completely empty rows
         df = df.dropna(how="all")
 
-        # Standardize column names (case-insensitive)
-        df.columns = df.columns.str.lower().str.strip()
+        # Check if this is nifty format
+        is_nifty_format = self._is_nifty_format(df)
+        
+        if is_nifty_format:
+            logger.info("Detected Nifty format, applying specific mapping")
+            df = self._process_nifty_format(df)
+        else:
+            # Standardize column names (case-insensitive)
+            df.columns = df.columns.str.lower().str.strip()
 
-        # Map common column variations
-        column_mapping = {
-            "ticker": "symbol",
-            "stock": "symbol",
-            "instrument": "symbol",
-            "buy_sell": "side",
-            "type": "side",
-            "qty": "quantity",
-            "amount": "quantity",
-            "shares": "quantity",
-            "datetime": "date",
-            "timestamp": "date",
-            "profit_loss": "pnl",
-            "p&l": "pnl",
-            "pnl": "pnl",
-            "commission": "fees",
-            "brokerage": "fees",
-            "fee": "fees",
-        }
+            # Map common column variations
+            column_mapping = {
+                "ticker": "symbol",
+                "stock": "symbol",
+                "instrument": "symbol",
+                "buy_sell": "side",
+                "type": "side",
+                "qty": "quantity",
+                "amount": "quantity",
+                "shares": "quantity",
+                "datetime": "date",
+                "timestamp": "date",
+                "profit_loss": "pnl",
+                "p&l": "pnl",
+                "pnl": "pnl",
+                "commission": "fees",
+                "brokerage": "fees",
+                "fee": "fees",
+            }
 
-        df = df.rename(columns=column_mapping)
+            df = df.rename(columns=column_mapping)
 
         # Check for required columns
         missing_columns = [
@@ -182,6 +199,67 @@ class FileProcessingService:
         df = self._remove_invalid_rows(df)
 
         logger.info(f"Data cleaned: {len(df)} valid rows remaining")
+        return df
+
+    def _is_nifty_format(self, df: pd.DataFrame) -> bool:
+        """Check if the dataframe is in Nifty format."""
+        nifty_columns = ["Time", "Type", "Instrument", "Product", "Qty.", "Avg. price", "Status"]
+        return all(col in df.columns for col in nifty_columns)
+
+    def _process_nifty_format(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Process Nifty format data."""
+        logger.info("Processing Nifty format data")
+        
+        # Rename columns to standard format
+        df = df.rename(columns=self.nifty_format_mapping)
+        
+        # Parse datetime and split into date and time
+        df['date'] = pd.to_datetime(df['datetime'], errors='coerce')
+        df['time'] = df['date'].dt.time
+        
+        # Clean quantity (remove /1500 format)
+        if 'quantity' in df.columns:
+            df['quantity'] = df['quantity'].astype(str).str.split('/').str[0].astype(float)
+        
+        # Clean price
+        if 'price' in df.columns:
+            df['price'] = pd.to_numeric(df['price'], errors='coerce')
+        
+        # Standardize side values
+        if 'side' in df.columns:
+            df['side'] = df['side'].str.upper()
+        
+        # Calculate P&L for each trade pair
+        df = self._calculate_nifty_pnl(df)
+        
+        return df
+
+    def _calculate_nifty_pnl(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Calculate P&L for Nifty format trades."""
+        logger.info("Calculating P&L for Nifty trades")
+        
+        # Sort by datetime
+        df = df.sort_values('date')
+        
+        # Group by instrument to calculate P&L for each pair
+        df['pnl'] = 0.0
+        
+        for instrument in df['symbol'].unique():
+            instrument_trades = df[df['symbol'] == instrument].copy()
+            
+            # Process BUY/SELL pairs
+            buy_trades = instrument_trades[instrument_trades['side'] == 'BUY'].copy()
+            sell_trades = instrument_trades[instrument_trades['side'] == 'SELL'].copy()
+            
+            # Calculate P&L for each pair
+            for i, (_, buy_trade) in enumerate(buy_trades.iterrows()):
+                if i < len(sell_trades):
+                    sell_trade = sell_trades.iloc[i]
+                    pnl = (sell_trade['price'] - buy_trade['price']) * buy_trade['quantity']
+                    
+                    # Update P&L in dataframe
+                    df.loc[df['date'] == sell_trade['date'], 'pnl'] = pnl
+        
         return df
 
     def _clean_data_types(self, df: pd.DataFrame) -> pd.DataFrame:

@@ -122,7 +122,7 @@ const Navigation = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/5 to-purple-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </Button>
               <Button className="relative group bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-white border-0 shadow-lg hover:shadow-xl rounded-xl overflow-hidden">
-                <span className="relative z-10 font-semibold">Get Started</span>
+                <span className="relative z-10 font-semibold">Get Started PRO</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </Button>
             </div>

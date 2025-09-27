@@ -4,7 +4,6 @@ import {
   Clock,
   Activity,
   Target,
-  DollarSign,
   TrendingUp,
   Brain,
   Pause,
@@ -30,13 +29,14 @@ import {
   Calendar,
   Crosshair,
   Microscope,
-  TrendingDownIcon,
   Bolt,
   CircleDot,
   BarChart,
   Layers,
   Signal
 } from "lucide-react";
+import { useFileHistory } from '@/hooks/useTradingApi';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
@@ -749,10 +749,33 @@ const timePeriodOptions = [
 ];
 
 export default function DashboardTimeMetrics() {
+  const { files } = useFileHistory();
   const [selectedTimePeriod, setSelectedTimePeriod] = useState("week");
+
+  // Check if user has uploaded files
+  const hasUploadedFiles = files && files.length > 0;
+  
+  // Helper function to get metric value based on user's file upload status
+  const getMetricValue = (devValue: string, prodValue: string = "-") => {
+    if (hasUploadedFiles) {
+      return devValue;
+    }
+    return prodValue;
+  };
 
   return (
     <div className="space-y-4 md:space-y-6">
+      {/* File Upload Status Indicator */}
+      {!hasUploadedFiles && (
+        <Alert className="bg-blue-50 border-blue-200 text-blue-800">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            <strong>No Data Uploaded:</strong> Upload your trading data to see real time metrics and analytics. 
+            All values are currently showing as "-" until you upload your first file.
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Time Metrics</h1>
@@ -851,24 +874,32 @@ export default function DashboardTimeMetrics() {
               </CardHeader>
               <CardContent className="p-4 md:p-6 pt-0">
                 <div className="text-xl md:text-2xl lg:text-3xl font-bold mb-1 md:mb-2 bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
-                  {metric.value}
+                  {getMetricValue(metric.value)}
                 </div>
                 <div className="flex items-center text-xs md:text-sm font-medium">
-                  {metric.trend === "up" && (
-                    <div className="flex items-center text-green-600 bg-green-600/10 px-2 py-0.5 md:py-1 rounded-full min-w-0">
-                      <TrendingUp className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1 flex-shrink-0" />
-                      <span className="truncate">{metric.change}</span>
-                    </div>
-                  )}
-                  {metric.trend === "down" && (
-                    <div className="flex items-center text-red-600 bg-red-600/10 px-2 py-0.5 md:py-1 rounded-full min-w-0">
-                      <TrendingDown className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1 flex-shrink-0" />
-                      <span className="truncate">{metric.change}</span>
-                    </div>
-                  )}
-                  {metric.trend === "neutral" && (
+                  {hasUploadedFiles ? (
+                    <>
+                      {metric.trend === "up" && (
+                        <div className="flex items-center text-green-600 bg-green-600/10 px-2 py-0.5 md:py-1 rounded-full min-w-0">
+                          <TrendingUp className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1 flex-shrink-0" />
+                          <span className="truncate">{metric.change}</span>
+                        </div>
+                      )}
+                      {metric.trend === "down" && (
+                        <div className="flex items-center text-red-600 bg-red-600/10 px-2 py-0.5 md:py-1 rounded-full min-w-0">
+                          <TrendingDown className="h-2.5 w-2.5 md:h-3 md:w-3 mr-1 flex-shrink-0" />
+                          <span className="truncate">{metric.change}</span>
+                        </div>
+                      )}
+                      {metric.trend === "neutral" && (
+                        <div className="flex items-center text-muted-foreground bg-muted/50 px-2 py-0.5 md:py-1 rounded-full min-w-0">
+                          <span className="truncate">{metric.change}</span>
+                        </div>
+                      )}
+                    </>
+                  ) : (
                     <div className="flex items-center text-muted-foreground bg-muted/50 px-2 py-0.5 md:py-1 rounded-full min-w-0">
-                      <span className="truncate">{metric.change}</span>
+                      <span className="truncate">-</span>
                     </div>
                   )}
                 </div>
